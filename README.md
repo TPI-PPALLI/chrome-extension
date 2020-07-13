@@ -1,3 +1,5 @@
+## Setup PPALLI chrome extension
+
 In order to set this extension up in your chrome, navigate to `chrome://extensions/` in your browser.
 * Press the `Load unpacked extension...` button
 * Browse to the `build` folder and press the `OK` button
