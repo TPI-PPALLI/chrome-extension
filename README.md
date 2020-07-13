@@ -1,8 +1,10 @@
 ## Setup PPALLI chrome extension
 
+Ensure that you run `npm run build` after your changes to generate a new `build` folder. 
+
 In order to set this extension up in your chrome, navigate to `chrome://extensions/` in your browser.
 * Press the `Load unpacked extension...` button
-* Browse to the `build` folder and press the `OK` button
+* Browse to the `build` folder and press the `OK` button.
 
 ## Available Scripts
 
