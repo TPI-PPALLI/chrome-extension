@@ -1,4 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+In order to set this extension up in your chrome, navigate to `chrome://extensions/` in your browser.
+* Press the `Load unpacked extension...` button
+* Browse to the `build` folder and press the `OK` button
 
 ## Available Scripts
 
