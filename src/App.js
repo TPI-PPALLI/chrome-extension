@@ -8,15 +8,16 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Welcome to Ppalli!
         </p>
         <a
+          type="button"
           className="App-link"
-          href="https://reactjs.org"
+          href="https://tpi-ppalli.github.io/web-app/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Visit us
         </a>
       </header>
     </div>
