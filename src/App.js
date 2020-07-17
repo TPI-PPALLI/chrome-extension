@@ -1,3 +1,5 @@
+/*global chrome */
+
 import React from 'react';
 import logo from './logoblob.PNG';
 import './App.css';
