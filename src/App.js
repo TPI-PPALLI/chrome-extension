@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './logo.svg';
+import logo from './logoblob.PNG';
 import './App.css';
 
 function App() {
@@ -11,8 +11,7 @@ function App() {
           Welcome to Ppalli!
         </p>
         <a
-          type="button"
-          className="App-link"
+          class="button"
           href="https://tpi-ppalli.github.io/web-app/"
           target="_blank"
           rel="noopener noreferrer"
