@@ -5,7 +5,17 @@
   "description": "empowering users to break the momentum of binge-watching through breaks and wellness activities",
   "version": "0.0.1",
   "background": {
+    "scripts": ["background.js"],
+    "persistent": false
   },
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["jquery.js", "jquery-ui.js","content.js"],
+      "css": ["jquery-ui.css", "content.css"]
+    }
+  ],
+  "web_accessible_resources": ["strike_popup.html"],
   "browser_action": {
     "default_popup": "index.html",
     "default_title": "Open the popup"
@@ -16,5 +26,7 @@
     "128": "logoblob.PNG"
   },
   "content_security_policy": "script-src 'self' 'sha256-gGcM6HVHv1z7C0t4ZWxIWaiPEsqfCSDlsHfmZ6A54/k='; object-src 'self'",
-  "permissions": ["alarms", "notifications", "storage"]
+  "permissions": ["alarms", "notifications", "storage", "activeTab"]
+
+
 }
