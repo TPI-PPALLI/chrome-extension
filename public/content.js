@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener(
         console.log(sender.tab ?
             "from a content script:" + sender.tab.url :
             "from the extension");
-        if (request == "strike_3") {
+        if (request == "open_popup_3") {
             $("#strike_3_ID").dialog("open"); // opens strike 3 dialog
             // listeners need to send responses to make sure the port is not closed before response received
             sendResponse("strike 3 received, opening strike 3 popup ");
@@ -86,7 +86,7 @@ chrome.runtime.onMessage.addListener(
         } else if (request == "close_popup") {
             $("#strike_popup_ID").dialog("close");
             sendResponse("strike received, opening strike popup ");
-        } else if (request == "close_3_popup") {
+        } else if (request == "close_popup_3") {
             $("#strike_3_ID").dialog("close");
             sendResponse("strike received, opening strike popup ");
         }

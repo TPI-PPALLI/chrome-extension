@@ -12,3 +12,13 @@
 
 }
 
+.ui-dialog {
+    background-color: #003eff;
+    position: absolute;
+    z-index: 1000;
+    width: 50%;
+    height: 50%;
+    modal: true;
+
+}
+
