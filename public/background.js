@@ -76,6 +76,7 @@ chrome.runtime.onMessage.addListener(
         }
         else if (request == "strike_accepted") {
             redirect();
+            sendResponse("redirected to: " + theURL);
 
         } else if (request == "strike_ignored") {
             // dialog closed by content.js
