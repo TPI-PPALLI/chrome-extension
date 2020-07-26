@@ -92,13 +92,10 @@ $(function() {
     $( "#strike3_popup_ID" ).dialog({
         dialogClass: "no-close", // no-close to remove x button
         title: "STRIKE ",
-<<<<<<< HEAD
-=======
         resizable: false,
         draggable: false,
         height: 300,
         width: 450,
->>>>>>> 2b6efe788647816385620b9fb712931735c019e3
         autoOpen: false, // opens dialog when youtube is reloaded, set this to false later for timer
         modal: true, // disables other functions on the page
         buttons: {
