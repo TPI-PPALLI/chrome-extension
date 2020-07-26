@@ -60,8 +60,6 @@ let watchTimer = new Timer(function () {
     breakTimer.start();
 }, watchInterval);
 
-<<<<<<< HEAD
-=======
 
 let breakTimer = new Timer(function () {
     breakTimer.setRunning(false);
@@ -87,14 +85,11 @@ let pauseTimer = new Timer(function () {
 // END OF GLOBAL VARIABLES
 
 
->>>>>>> 2b6efe788647816385620b9fb712931735c019e3
 // cannot call from content.js so need to call here
 function redirect() {
     chrome.tabs.create({url: strikeURL});
 }
 
-<<<<<<< HEAD
-=======
 
 // helper to message content.js
 function messageContent(message) {
@@ -108,7 +103,6 @@ function messageContent(message) {
 }
 
 
->>>>>>> 2b6efe788647816385620b9fb712931735c019e3
 // listen for messages from content.js
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -127,23 +121,9 @@ chrome.runtime.onMessage.addListener(
         }
         else if (request === "strike_accepted") {
             redirect();
-<<<<<<< HEAD
-            setTimeout(function () { // remove popup after break
-                chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id, "close_popup", function (response) {
-                        console.log(response);
-                    });
-                });
-            }, breakInterval);
-            strikeCount = 0; // reset strikeCount
-            sendResponse("redirected to " + strikeURL);
-
-        } else if (request == "strike_ignored") {
-=======
             sendResponse("redirected to: " + theURL);
 
         } else if (request === "strike_ignored") {
->>>>>>> 2b6efe788647816385620b9fb712931735c019e3
             // dialog closed by content.js
             breakTimer.stop(); // stop the break timer
             watchTimer.stop(); // just in case
