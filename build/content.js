@@ -22,7 +22,7 @@ popup2.id = "strike2_popup_ID";
 popup2.innerHTML = "<h1>Second strike!</h1>";
 document.body.append(popup2);
 
-// add strike 3 popup to dom 
+// add strike 3 popup to dom
 var popup3 = document.createElement("div");
 popup3.id = "strike3_popup_ID";
 popup3.innerHTML = "<h1>Third strike!</h1>";
@@ -150,7 +150,7 @@ chrome.runtime.onMessage.addListener(
         console.log(sender.tab ?
             "from a content script:" + sender.tab.url :
             "from the extension");
-        if (request == "open_popup_3") {
+        if (request == "open_strikeout") {
             $("#strike_3_ID").dialog("open"); // opens strike 3 dialog
             // listeners need to send responses to make sure the port is not closed before response received
             sendResponse("strike 3 received, opening strike 3 popup ");
@@ -172,11 +172,11 @@ chrome.runtime.onMessage.addListener(
         } else if (request == "close_popup3") {
             $("#strike3_popup_ID").dialog("close");
             sendResponse("strike received, opening strike popup ");
-        } else if (request == "close_popup_3") {
+        } else if (request == "close_strikeout") {
             $("#strike_3_ID").dialog("close");
             sendResponse("strike received, opening strike popup ");
         } else {
-            alert(request);
+            //alert(request);
         }
     });
 
