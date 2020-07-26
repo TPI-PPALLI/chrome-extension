@@ -10,8 +10,8 @@ let breakInterval = 10000;
 let watchInterval = 15000;
 let pauseInterval = 5000;
 
-let popupToOpen = "popup";
-let popupToClose = "popup";
+let popupToOpen = "popup1";
+let popupToClose = "popup1";
 let stoppedWatching = false;
 let timerStarted = false;
 
@@ -128,10 +128,16 @@ chrome.runtime.onMessage.addListener(
             watchTimer.stop(); // just in case
             strikeCount++;
 
-            if (strikeCount === 3) {
+            if (strikeCount == 1) {
+                popupToOpen = "popup2"; // if strikecount is 1, we prepare to open the second-strike window 
+            } 
+            if (strikeCount == 2) {
+                popupToOpen = "popup3"; // if strikecount is 2, we prepare to open the third-strike window 
+            } 
+            if (strikeCount == 3) {
                 popupToOpen = "popup_3";
-                messageContent("open_" + popupToOpen); // open strike 3 popup, will set popupToClose = popup_3
-                popupToOpen = "popup"; // for next popup to open after popup_3 closed
+                messageContent("open_" + popupToOpen); // open the strike 3 popup, will set popupToClose = popup_3
+                popupToOpen = "popup1"; // for next popup after popup_3 closed
                 breakTimer.start();
                 strikeCount = 0; // reset strikeCount
 

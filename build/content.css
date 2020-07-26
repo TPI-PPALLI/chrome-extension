@@ -1,4 +1,5 @@
 .no-close .ui-dialog-titlebar-close {
+    background-color: #003eff;
     display: none;
 }
 
@@ -8,17 +9,57 @@
     z-index: 1000;
     width: 50%;
     height: 50%;
+    border-radius: 10;
     modal: true;
 
 }
+.ui-dialog .ui-corner-all {
+    border-radius: 10;
+}
 
-.ui-dialog {
+
+.ui-dialog .ui-dialog-titlebar {
     background-color: #003eff;
-    position: absolute;
-    z-index: 1000;
-    width: 50%;
-    height: 50%;
-    modal: true;
-
+    font-size: large;
+}
+.ui-dialog .ui-dialog-content {
+	border: 0;
+	padding: 20px;
+    font-size: medium;
+    color:#E3F1CF;
+    background-color: #003eff;
+	overflow: auto;
+}
+.ui-dialog .ui-dialog-buttonpane {
+	text-align: left;
+	border-width: 1px 0 0 0;
+	background-image: none;
+	margin-top: .5em;
+	padding: .3em 1em .5em .4em;
+    background-color: #F86379;
+}
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+	float: right;
+    
+}
+.ui-dialog .ui-dialog-buttonpane button {
+	margin: .5em .4em .5em 0;
+	cursor: pointer;
+    
 }
 
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset .Accept
+{
+    font-size:15px;
+    color: #FFFFFF;
+    width: 150px;
+    background: #F86379;
+    
+}
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset .Ignore
+{
+    font-size:15px;
+    color: #FFFFFF;
+    width: 150px;
+    background: #F86379;
+}
