@@ -7,7 +7,7 @@ let strikeCount = 0;
 
 // in milliseconds
 let breakInterval = 10000;
-let watchInterval = 10000;
+let watchInterval = 15000;
 let pauseInterval = 5000;
 
 let popupToOpen = "popup1";
@@ -53,7 +53,7 @@ let Timer = function(callback, time) {
 }
 
 
-// set timers
+// set timers to call each other recursively
 let watchTimer = new Timer(function () {
     watchTimer.setRunning(false);
     messageContent("open_" + popupToOpen); // send message to content.js to open popup
@@ -142,7 +142,6 @@ chrome.runtime.onMessage.addListener(
                 strikeCount = 0; // reset strikeCount
 
             } else { //
-                //console.log("strikecount=" + strikeCount);
                 watchTimer.start();
             }
             sendResponse("strike changed to " + strikeCount);
@@ -157,33 +156,38 @@ chrome.tabs.onActivated.addListener(
         chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
 
             if (tabs[0].url.match(/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?.*/gm)) {
-                // start timer if timer was stopped
-                stoppedWatching = false;
+
+                stoppedWatching = false; // enable watch timer to start after break is complete
+
                 if (pauseTimer.isRunning()) { // pause timer running
                     alert("pause timer running");
                     pauseTimer.stop();
                     watchTimer.resume();
+
                 } else if (!timerStarted) { // pause timer done or break completed
                     alert("timer restarted");
                     strikeCount = 0;
                     watchTimer.start();
                     timerStarted = true;
-                } // otherwise user is switching between 2 youtube tabs, so we do nothing
+                }
+                // if break is incomplete do nothing, use normal procedure
+                // otherwise user is switching between 2 youtube tabs, also do nothing
 
             } else {
                 alert("switched to not youtube");
                 if (breakTimer.isRunning()) {
                     //alert("break timer running");
                     // let break timer finish as usual
-                    // stop watch timer, set timer started = false
-                    stoppedWatching = true;
+                    stoppedWatching = true; // prevent watch timer from starting after break complete
 
                 } else if (watchTimer.isRunning()) {
                     //alert("watch timer running");
-                    // pause timer
+                    // pause the watch timer, and start pause timer
                     watchTimer.pause();
                     pauseTimer.start();
-                    // if we switched back to youtube during this 1min then stop pause timer, and resume watch timer
+                    // if we switched back to youtube while pause timer still on
+                    // then we stop pause timer, and resume watch timer
+
                 } else {
                     //alert("no timer running");
                 }
