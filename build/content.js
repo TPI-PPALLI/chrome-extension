@@ -5,7 +5,7 @@
 
 
 console.log("chrome extension working...");
-let global = -1;
+var currentPopupOn = "popup";
 
 
 // show popup
@@ -70,6 +70,7 @@ chrome.runtime.sendMessage("start_timer", function(response) {
 });
 
 
+
 // receive messages from background
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -89,6 +90,8 @@ chrome.runtime.onMessage.addListener(
         } else if (request == "close_popup_3") {
             $("#strike_3_ID").dialog("close");
             sendResponse("strike received, opening strike popup ");
+        } else {
+            alert(request);
         }
     });
 
