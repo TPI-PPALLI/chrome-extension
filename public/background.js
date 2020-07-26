@@ -112,7 +112,7 @@ chrome.runtime.onMessage.addListener(
             if (!(timerStarted || breakTimer.isRunning() || watchTimer.isRunning())) { // only start timer once
                 watchTimer.start();
                 timerStarted = true;
-                alert("timer started");
+                //alert("timer started");
             }
             // listeners must send responses to make sure port is not closed before response received
             sendResponse("timer started in background.js");
@@ -154,12 +154,12 @@ chrome.tabs.onActivated.addListener(
                 stoppedWatching = false; // enable watch timer to start after break is complete
 
                 if (pauseTimer.isRunning()) { // pause timer running
-                    alert("pause timer running");
+                    //alert("pause timer running");
                     pauseTimer.stop();
                     watchTimer.resume();
 
                 } else if (!timerStarted) { // pause timer done or break completed
-                    alert("timer restarted");
+                    //alert("timer restarted");
                     strikeCount = 0;
                     watchTimer.start();
                     timerStarted = true;
@@ -168,7 +168,7 @@ chrome.tabs.onActivated.addListener(
                 // otherwise user is switching between 2 youtube tabs, also do nothing
 
             } else {
-                alert("switched to not youtube");
+                //alert("switched to not youtube");
                 if (breakTimer.isRunning()) {
                     //alert("break timer running");
                     // let break timer finish as usual
