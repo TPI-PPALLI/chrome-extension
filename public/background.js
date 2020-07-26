@@ -2,21 +2,16 @@
 /*global chrome*/
 
 // timer is done here so we could potentially manage multiple tabs
-
-let theURL = "https://tpi-ppalli.github.io/web-app/"; // where to redirect when strike is accepted
+let strikeURL = "https://tpi-ppalli.github.io/web-app/"; // where to redirect when strike is accepted
 let strikeCount = 1;
 // in milliseconds
 let breakInterval = 10000;
 let watchInterval = 3000;
 
-
-
 // cannot call from content.js so need to call here
 function redirect() {
-    chrome.tabs.create({url: theURL});
+    chrome.tabs.create({url: strikeURL});
 }
-
-
 
 // listen for messages from content.js
 chrome.runtime.onMessage.addListener(
@@ -46,7 +41,7 @@ chrome.runtime.onMessage.addListener(
                 });
             }, breakInterval);
             strikeCount = 0; // reset strikeCount
-            sendResponse("redirected to " + theURL);
+            sendResponse("redirected to " + strikeURL);
 
         } else if (request == "strike_ignored") {
             // dialog closed by content.js

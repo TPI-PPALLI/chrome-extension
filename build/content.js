@@ -1,6 +1,6 @@
 // this content script is called when the user opens youtube in their browser
 
-// this is to import chrome functions like chrome.runtime.sendMessage
+// this is to use chrome functions like chrome.runtime.sendMessage
 /*global chrome*/
 
 
@@ -26,7 +26,7 @@ document.body.append(strike3popup);
 $(function() {
     $( "#strike_popup_ID" ).dialog({
         dialogClass: "no-close", // no-close to remove x button
-        title: "STRIKE ",//+ getStrikeCount().toString() + ' !',
+        title: "STRIKE ",
         autoOpen: false, // opens dialog when youtube is reloaded, set this to false later for timer
         modal: true, // disables other functions on the page
         buttons: {
@@ -91,10 +91,3 @@ chrome.runtime.onMessage.addListener(
             sendResponse("strike received, opening strike popup ");
         }
     });
-
-
-
-
-
-
-

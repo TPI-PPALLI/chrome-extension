@@ -1,7 +1,5 @@
-/*global chrome */
-
 import React from 'react';
-import logo from './logoblob.PNG';
+import logo from './logoblob.png'; // consider taking away the blue background from this logo
 import './App.css';
 
 function App() {

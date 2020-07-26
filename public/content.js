@@ -91,10 +91,3 @@ chrome.runtime.onMessage.addListener(
             sendResponse("strike received, opening strike popup ");
         }
     });
-
-
-
-
-
-
-
