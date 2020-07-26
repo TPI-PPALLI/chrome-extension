@@ -176,7 +176,7 @@ chrome.runtime.onMessage.addListener(
             $("#strike_3_ID").dialog("close");
             sendResponse("strike received, opening strike popup ");
         } else {
-            alert(request);
+            //alert(request);
         }
     });
 
