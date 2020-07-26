@@ -10,8 +10,8 @@ let strikeCount = 0;
 let breakInterval = 10000;
 let watchInterval = 3000;
 
-var popupToOpen = "popup";
-var popupToClose = "popup";
+var popupToOpen = "popup1";
+var popupToClose = "popup1";
 
 
 // define timer class
@@ -76,6 +76,7 @@ chrome.runtime.onMessage.addListener(
         }
         else if (request == "strike_accepted") {
             redirect();
+            sendResponse("redirected to: " + theURL);
 
         } else if (request == "strike_ignored") {
             // dialog closed by content.js
@@ -83,14 +84,21 @@ chrome.runtime.onMessage.addListener(
             watchTimer.stop(); // just in case
             strikeCount++;
 
+            if (strikeCount == 1) {
+                popupToOpen = "popup2"; // if strikecount is 1, we prepare to open the second-strike window 
+            } 
+            if (strikeCount == 2) {
+                popupToOpen = "popup3"; // if strikecount is 2, we prepare to open the third-strike window 
+            } 
             if (strikeCount == 3) {
                 popupToOpen = "popup_3";
                 messageContent("open_" + popupToOpen); // open the strike 3 popup, will set popupToClose = popup_3
-                popupToOpen = "popup"; // for next popup after popup_3 closed
+                popupToOpen = "popup1"; // for next popup after popup_3 closed
                 breakTimer.start();
                 strikeCount = 0; // reset strikeCount
 
             } else { //
+                //console.log("strikecount=" + strikeCount);
                 watchTimer.start();
             }
             sendResponse("strike changed to " + strikeCount);
