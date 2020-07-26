@@ -13,7 +13,7 @@ var currentPopupOn = "popup";
 // add strike 1 popup to dom
 var popup1 = document.createElement("div");
 popup1.id = "strike1_popup_ID";
-popup1.innerHTML = "<h1>First strike!</h1>";
+popup1.innerHTML = '<h1>First strike!</h1> <img href="src/ppalli_meditation" />';
 document.body.append(popup1);
 
 // add strike 2 popup to dom
@@ -25,7 +25,7 @@ document.body.append(popup2);
 // add strike 3 popup to dom
 var popup3 = document.createElement("div");
 popup3.id = "strike3_popup_ID";
-popup3.innerHTML = "<h1>Third strike!</h1>";
+popup3.innerHTML = "<h1>Third strike!</h1><img >";
 document.body.append(popup3);
 
 

@@ -10,17 +10,16 @@
     width: 50%;
     height: 50%;
     border-radius: 10;
-    modal: true;
-
+    border-radius: 20px;
 }
 .ui-dialog .ui-corner-all {
-    border-radius: 10;
+    border-radius: 20px;
 }
-
 
 .ui-dialog .ui-dialog-titlebar {
     background-color: #003eff;
     font-size: large;
+    color: #E3F1CF;
 }
 .ui-dialog .ui-dialog-content {
 	border: 0;
@@ -31,24 +30,30 @@
 	overflow: auto;
 }
 .ui-dialog .ui-dialog-buttonpane {
-	text-align: left;
+	text-align: center;
 	border-width: 1px 0 0 0;
 	background-image: none;
 	margin-top: .5em;
-	padding: .3em 1em .5em .4em;
+    padding: 5px 75px;
     background-color: #F86379;
+    border-radius: 20px;
 }
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
 	float: right;
     
 }
 .ui-dialog .ui-dialog-buttonpane button {
-	margin: .5em .4em .5em 0;
+    margin: 15px;
+    width: auto;
+    padding: 10px 25px;
 	cursor: pointer;
-    
+    font-size: 20px;
+    color: #000000;
+    background: #FFFFFF;
+    border-radius: 20px;
 }
 
-.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset .Accept
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset .strike_accepted
 {
     font-size:15px;
     color: #FFFFFF;
@@ -56,7 +61,7 @@
     background: #F86379;
     
 }
-.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset .Ignore
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset .strike_ignored
 {
     font-size:15px;
     color: #FFFFFF;
