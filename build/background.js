@@ -122,7 +122,6 @@ chrome.runtime.onMessage.addListener(
         }
         else if (request === "strike_accepted") {
             redirect();
-            strikeAccepted = true;
             sendResponse("redirected to: " + theURL);
 
         } else if (request === "strike_ignored") {
@@ -182,7 +181,7 @@ chrome.tabs.onActivated.addListener(
                     // if we switched back to youtube while pause timer still on
                     // then we stop pause timer, and resume watch timer
 
-                } else {
+                } else { // this should only happen if youtube exited and timers all stop
                     //alert("no timer running");
                 }
             }
