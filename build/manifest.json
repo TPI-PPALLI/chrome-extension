@@ -18,7 +18,7 @@
   "web_accessible_resources": ["strike_popup.html"],
   "browser_action": {
     "default_popup": "index.html",
-    "default_title": "Open the popup"
+    "default_title": "Explore Ppalli"
   },
   "icons": {
     "16": "logoblob.png",
@@ -26,7 +26,7 @@
     "128": "logoblob.png"
   },
   "content_security_policy": "script-src 'self' 'sha256-gGcM6HVHv1z7C0t4ZWxIWaiPEsqfCSDlsHfmZ6A54/k='; object-src 'self'",
-  "permissions": ["alarms", "notifications", "storage", "activeTab"]
+  "permissions": ["alarms", "notifications", "storage", "activeTab", "tabs"]
 
 
 }
