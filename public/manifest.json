@@ -15,7 +15,9 @@
       "css": ["jquery-ui.css", "content.css"]
     }
   ],
-  "web_accessible_resources": ["strike_popup.html"],
+  "web_accessible_resources": [
+    "src/*.png"
+  ],
   "browser_action": {
     "default_popup": "index.html",
     "default_title": "Explore Ppalli"
