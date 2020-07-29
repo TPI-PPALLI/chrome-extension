@@ -6,13 +6,18 @@
   "version": "0.0.1",
   "background": {
     "scripts": ["background.js"],
-    "persistent": false
+    "persistent": true
   },
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/*"],
       "js": ["jquery.js", "jquery-ui.js","content.js"],
       "css": ["jquery-ui.css", "content.css"]
+    },
+    {
+      "matches": ["*://*.tpi-ppalli.github.io/*"],
+      "js": ["jquery.js", "jquery-ui.js","palliTimer.js"]
+
     }
   ],
   "web_accessible_resources": [
@@ -28,7 +33,7 @@
     "128": "logoblob.png"
   },
   "content_security_policy": "script-src 'self' 'sha256-gGcM6HVHv1z7C0t4ZWxIWaiPEsqfCSDlsHfmZ6A54/k='; object-src 'self'",
-  "permissions": ["alarms", "notifications", "storage", "activeTab", "tabs"]
+  "permissions": ["alarms", "notifications", "storage", "activeTab", "tabs", "https://*/*", "http://*/*", "webNavigation"]
 
 
 }

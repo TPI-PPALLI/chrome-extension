@@ -182,7 +182,5 @@ chrome.runtime.onMessage.addListener(
         } else if (request == "close_strikeout") {
             $("#strike_3_ID").dialog("close");
             sendResponse("strike received, opening strike popup ");
-        } else {
-            //alert(request);
         }
     });
