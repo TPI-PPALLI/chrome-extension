@@ -104,8 +104,15 @@ function redirect() {
 function messageContent(message) {
     chrome.tabs.query({url: "*://*.youtube.com/*"}, function (tabs) { // send message to all tabs with youtube url
         tabs.forEach(function(tab) {
+            if (message == "open_popup" + strikeCount || message == "close_popup" + strikeCount){
+                chrome.tabs.executeScript(
+                    {code: "var b = document.querySelector('button.ytp-play-button.ytp-button'); if(b){b.click();}"}
+                );
+                console.log("video stopped");
+            }
             chrome.tabs.sendMessage(tab.id, message, function (response) {
                 console.log(response);
+                
             });
         })
     });
@@ -143,6 +150,8 @@ chrome.runtime.onMessage.addListener(
             if (!(breakTimer.isRunning() || watchTimer.isRunning())) { // only start timer once
                 watchTimer.start();
                 timerStarted = true;
+                
+                
                 //alert("timer started");
             }
             // listeners must send responses to make sure port is not closed before response received
@@ -158,6 +167,7 @@ chrome.runtime.onMessage.addListener(
             messageContent("close_popup" + strikeCount);
             breakTimer.stop(); // stop the break timer
             watchTimer.stop(); // just in case
+             
 
             if (strikeCount === 3) {
                 messageContent("open_strikeout"); // open the strikeout popup

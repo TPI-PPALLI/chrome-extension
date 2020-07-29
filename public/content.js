@@ -168,7 +168,7 @@ chrome.runtime.onMessage.addListener(
             $("#strike1_popup_ID").dialog("close");
             sendResponse("strike received, opening strike popup ");
         } else if (request == "open_popup2") {
-            $("#strike2_popup_ID").dialog("open");
+             $("#strike2_popup_ID").dialog("open");
             sendResponse("strike received, opening strike popup ");
         } else if (request == "close_popup2") {
             $("#strike2_popup_ID").dialog("close");
