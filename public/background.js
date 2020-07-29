@@ -4,10 +4,11 @@
 
 let theURL = "https://tpi-ppalli.github.io/web-app/"; // where to redirect when strike is accepted
 let strikeCount = 1;
+let strikeOut = false;
 
 // in milliseconds
-let breakInterval = 10000;
-let watchInterval = 5000;
+let breakInterval = 60000; // 30min is 1800000
+let watchInterval = 10000;
 let pauseInterval = 5000;
 
 let stoppedWatching = false;
@@ -51,6 +52,11 @@ let Timer = function(callback, time) {
     this.setRunning = function(state) {
         running = state;
     }
+    this.getTimestamp = function() {
+        this.pause();
+        this.resume();
+        return remaining;
+    }
 }
 
 
@@ -65,7 +71,10 @@ let watchTimer = new Timer(function () {
 let breakTimer = new Timer(function () {
     breakTimer.setRunning(false);
     messageContent("close_strikeout");
-    messageContent("close_popup" + strikeCount); // send message to content.js to close popup
+    if (strikeOut) {
+        messageContent("close_popup" + strikeCount);
+        strikeOut = false;
+    }
     strikeCount = 1; // reset strike count upon successful break completion
     if (!stoppedWatching) watchTimer.start();
     else timerStarted = false;
@@ -104,6 +113,26 @@ function messageContent(message) {
 }
 
 
+// send timestamp to ppalli website
+function sendTimestamp(tab) {
+    if (tab.url === "https://tpi-ppalli.github.io/web-app/") {
+        let tmp = "0:0:0";
+        if (breakTimer.isRunning()) {
+            let ms = breakTimer.getTimestamp();
+            let hour = Math.floor(ms/3600000);
+            let minute = Math.floor((ms - (hour * 3600000)) / 60000);
+            let second = Math.floor((ms - (hour * 3600000) - (minute * 60000)) / 1000);
+            tmp = hour + ':' + minute + ':' + second;
+        }
+        chrome.tabs.sendMessage(tab.id, {message: "change_timeStamp", time: tmp},
+            function (response) {
+                console.log(response);
+            });
+        //alert("sending " + tmp);
+    }
+}
+
+
 // listen for messages from content.js
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -112,7 +141,7 @@ chrome.runtime.onMessage.addListener(
             "from the extension");
 
         if (request === "start_timer") { // called when a new youtube page is opened
-            if (!(timerStarted || breakTimer.isRunning() || watchTimer.isRunning())) { // only start timer once
+            if (!(breakTimer.isRunning() || watchTimer.isRunning())) { // only start timer once
                 watchTimer.start();
                 timerStarted = true;
                 //alert("timer started");
@@ -126,11 +155,14 @@ chrome.runtime.onMessage.addListener(
 
         } else if (request === "strike_ignored") {
             // dialog closed by content.js
+            // close dialogs on all youtube tabs
+            messageContent("close_popup" + strikeCount);
             breakTimer.stop(); // stop the break timer
             watchTimer.stop(); // just in case
 
             if (strikeCount === 3) {
                 messageContent("open_strikeout"); // open the strikeout popup
+                strikeOut = true;
                 breakTimer.start();
                 strikeCount = 0; // reset strikeCount
             } else {
@@ -171,6 +203,11 @@ chrome.tabs.onActivated.addListener(
                 if (breakTimer.isRunning()) {
                     //alert("break timer running");
                     // let break timer finish as usual
+                    if (strikeOut) { // make sure popup is open
+                        messageContent("open_strikeout");
+                    } else {
+                        messageContent("open_popup" + strikeCount);
+                    }
                     stoppedWatching = true; // prevent watch timer from starting after break complete
 
                 } else if (watchTimer.isRunning()) {
@@ -185,6 +222,71 @@ chrome.tabs.onActivated.addListener(
                     //alert("no timer running");
                 }
             }
+            // send timestamp to ppalli website
+
+            if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") {
+                //alert("send on tab switched");
+                sendTimestamp(tabs[0]);
+            }
+
         })
     }
 )
+
+
+// detect when a tab's url changes, do the same thing as when the active tab switched
+chrome.webNavigation.onCompleted.addListener(function (tabId, changeInfo, tab) {
+    // get tab url
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        if (tabs[0].url.match(/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?.*/gm)) {
+            stoppedWatching = false; // enable watch timer to start after break is complete
+
+            if (pauseTimer.isRunning()) { // pause timer running
+                //alert("pause timer running");
+                pauseTimer.stop();
+                watchTimer.resume();
+
+            } else if (!timerStarted) { // pause timer done or break completed
+                //alert("timer restarted");
+                strikeCount = 1;
+                watchTimer.start();
+                timerStarted = true;
+
+            }
+            if (breakTimer.isRunning()) { // make sure popup is showing
+                if (strikeOut) {
+                    messageContent("open_strikeout");
+                } else {
+                    messageContent("open_popup" + strikeCount);
+                }
+            }
+
+        } else { // not sure if we need this part
+            //alert("switched to not youtube");
+            if (breakTimer.isRunning()) {
+                //alert("break timer running");
+                // let break timer finish as usual
+                stoppedWatching = true; // prevent watch timer from starting after break complete
+
+            } else if (watchTimer.isRunning()) {
+                //alert("watch timer running");
+                // pause the watch timer, and start pause timer
+                watchTimer.pause();
+                pauseTimer.start();
+                // if we switched back to youtube while pause timer still on
+                // then we stop pause timer, and resume watch timer
+
+            } else { // this should only happen if youtube exited and timers all stop
+                //alert("no timer running");
+            }
+        }
+        if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") {
+            //alert("send on updated");
+            sendTimestamp(tabs[0]);
+        }
+    });
+});
+
+
+
+
