@@ -102,14 +102,14 @@ function redirect() {
 
 // helper to message content.js
 function messageContent(message) {
-    if (message == "open_popup" + strikeCount){
-        chrome.tabs.executeScript(
-            {code: "var b = document.querySelector('button.ytp-play-button.ytp-button'); if(b){b.click();}"}
-        );
-        console.log("video stopped");
-    }
     chrome.tabs.query({url: "*://*.youtube.com/*"}, function (tabs) { // send message to all tabs with youtube url
         tabs.forEach(function(tab) {
+            if (message == "open_popup" + strikeCount || message == "close_popup" + strikeCount){
+                chrome.tabs.executeScript(
+                    {code: "var b = document.querySelector('button.ytp-play-button.ytp-button'); if(b){b.click();}"}
+                );
+                console.log("video stopped");
+            }
             chrome.tabs.sendMessage(tab.id, message, function (response) {
                 console.log(response);
                 
