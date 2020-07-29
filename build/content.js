@@ -4,6 +4,17 @@
 /*global chrome*/
 
 
+$(window).bind('hashchange', function() { 
+    console.log('window altered');
+    var v = document.getElementsByTagName("video")[0];
+    if (v != null){
+        v.addEventListener("play", function() { 
+            console.log('video playing...');
+        }, true);
+    };
+});
+
+
 console.log("chrome extension working...");
 var currentPopupOn = "popup";
 

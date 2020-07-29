@@ -104,9 +104,9 @@ function redirect() {
 function messageContent(message) {
     chrome.tabs.query({url: "*://*.youtube.com/*"}, function (tabs) { // send message to all tabs with youtube url
         tabs.forEach(function(tab) {
-            if (message == "open_popup" + strikeCount || message == "close_popup" + strikeCount){
+            if (message == "open_popup" + strikeCount){
                 chrome.tabs.executeScript(
-                    {code: "var b = document.querySelector('button.ytp-play-button.ytp-button'); if(b){b.click();}"}
+                    {code: "document.getElementsByTagName('video')[0].pause()"}
                 );
                 console.log("video stopped");
             }
