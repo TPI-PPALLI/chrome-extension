@@ -6,7 +6,7 @@ let strikeCount = 1;
 let strikeOut = false;
 
 // in milliseconds
-let breakInterval = 60000; // 30min is 1800000
+let breakInterval = 10000; // 30min is 1800000
 let watchInterval = 10000;
 let pauseInterval = 5000;
 
@@ -69,9 +69,9 @@ let watchTimer = new Timer(function () {
 
 let breakTimer = new Timer(function () {
     breakTimer.setRunning(false);
-    messageContent("close_strikeout");
+    messageContent("close_popup" + strikeCount);
     if (strikeOut) {
-        messageContent("close_popup" + strikeCount);
+        messageContent("close_strikeout");
         strikeOut = false;
     }
     strikeCount = 1; // reset strike count upon successful break completion
