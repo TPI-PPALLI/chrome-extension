@@ -3,7 +3,7 @@ import logo from "./logoblob.png"; // consider taking away the blue background f
 import "./App.css";
 
 function App() {
-  const options = [{
+  const timeOptions = [{
     label: '15 minutes',
     value: 15,
   },
@@ -20,7 +20,8 @@ function App() {
     value: 60,
   },
 ];
-const [timer, setTimer] = useState(options[0].value);
+const [breakTimer, setBreakTimer] = useState(timeOptions[0].value);
+const [watchTimer, setWatchTimer] = useState(timeOptions[0].value);
 
   return (
     <div className="App">
@@ -32,16 +33,31 @@ const [timer, setTimer] = useState(options[0].value);
             <div class="select">
               <select
                 id="notification-period"
-                onChange={e => setTimer(e.target.value)}
+                onChange={e => setWatchTimer(e.target.value)}
               >
-                {options.map((o) => (
+                {timeOptions.map((o) => (
                   <option value={o.value}>{o.label}</option>
                 ))}
               </select>
             </div>
           </form>
         </div>
-        <p>Your timer is set for every {timer} minutes.</p>
+        <p>Your watch interval is set for every {watchTimer} minutes.</p>
+        <div class="selectholder">
+          <form class="customSelect">
+            <div class="select">
+              <select
+                id="notification-period"
+                onChange={e => setBreakTimer(e.target.value)}
+              >
+                {timeOptions.map((o) => (
+                  <option value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+          </form>
+        </div>
+        <p>Your break interval is set for every {breakTimer} minutes.</p>
         <a
           class="button"
           href="https://tpi-ppalli.github.io/web-app/"
