@@ -68,3 +68,7 @@
     width: 150px;
     background: #F86379;
 }
+
+#someImage{
+    object-fit: contain;
+}

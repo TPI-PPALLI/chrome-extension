@@ -54,3 +54,54 @@
     transform: rotate(360deg);
   }
 }
+
+.customSelect {
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  position: relative;
+}
+
+.customSelect select{
+  width: 253px;
+  height: 25px;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  color: #388075;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  border: 0;
+  padding-left: 8px;
+  background: transparent;
+  appearance: none;
+    -webkit-appearance: none;
+}
+
+.customSelect .select{
+  width: 253px;
+  height: 25px;
+  border-radius: 1px;
+  border: solid 1px #388075;
+  top: 79px;
+  left: 16px;
+}
+
+.customSelect:after{
+  font-family: 'material icons';
+  position: absolute;
+  right: 29px;
+  top: 84px;
+  width: 11.5px;
+  height: 5.8px;
+  font-size: 20px;
+  color: #388075;
+  pointer-events: none;
+}

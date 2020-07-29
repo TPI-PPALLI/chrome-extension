@@ -20,15 +20,17 @@
 
     }
   ],
-  "web_accessible_resources": ["strike_popup.html"],
+  "web_accessible_resources": [
+    "src/*.png"
+  ],
   "browser_action": {
     "default_popup": "index.html",
     "default_title": "Explore Ppalli"
   },
   "icons": {
-    "16": "logoblob.PNG",
-    "48": "logoblob.PNG",
-    "128": "logoblob.PNG"
+    "16": "logoblob.png",
+    "48": "logoblob.png",
+    "128": "logoblob.png"
   },
   "content_security_policy": "script-src 'self' 'sha256-gGcM6HVHv1z7C0t4ZWxIWaiPEsqfCSDlsHfmZ6A54/k='; object-src 'self'",
   "permissions": ["alarms", "notifications", "storage", "activeTab", "tabs", "https://*/*", "http://*/*", "webNavigation"]

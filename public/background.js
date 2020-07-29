@@ -1,8 +1,7 @@
 
 /*global chrome*/
 // timer is done here so we could potentially manage multiple tabs
-
-let theURL = "https://tpi-ppalli.github.io/web-app/"; // where to redirect when strike is accepted
+let strikeURL = "https://tpi-ppalli.github.io/web-app/"; // where to redirect when strike is accepted
 let strikeCount = 1;
 let strikeOut = false;
 
@@ -97,7 +96,7 @@ let pauseTimer = new Timer(function () {
 
 // cannot call from content.js so need to call here
 function redirect() {
-    chrome.tabs.create({url: theURL});
+    chrome.tabs.create({url: strikeURL});
 }
 
 
