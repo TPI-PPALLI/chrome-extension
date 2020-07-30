@@ -71,9 +71,9 @@ let watchTimer = new Timer(function () {
 
 let breakTimer = new Timer(function () {
     breakTimer.setRunning(false);
-    messageContent("close_strikeout");
+    messageContent("close_popup" + strikeCount);
     if (strikeOut) {
-        messageContent("close_popup" + strikeCount);
+        messageContent("close_strikeout");
         strikeOut = false;
     }
     strikeCount = 1; // reset strike count upon successful break completion
