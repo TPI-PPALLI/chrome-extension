@@ -6,8 +6,7 @@
 var oldURL = "";
 var currentURL = window.location.href;
 function checkURLchange(currentURL){
-    if(currentURL != oldURL){
-        alert("url changed!");
+    if (currentURL != oldURL){
         var v = document.getElementsByTagName("video")[0];
         if (v != null){
             console.log("video exists");
@@ -39,13 +38,9 @@ function checkURLchange(currentURL){
 
 checkURLchange();
 
-
-
 console.log("chrome extension working...");
 
-
 // show popups
-
 
 // add strike 1 popup to dom
 var popup1 = document.createElement("div");
