@@ -3,20 +3,45 @@
 // this is to use chrome functions like chrome.runtime.sendMessage
 /*global chrome*/
 
+var oldURL = "";
+var currentURL = window.location.href;
+function checkURLchange(currentURL){
+    if(currentURL != oldURL){
+        alert("url changed!");
+        var v = document.getElementsByTagName("video")[0];
+        if (v != null){
+            console.log("video exists");
+            v.addEventListener("play", function() { 
+                console.log('video playing...');
+                chrome.runtime.sendMessage("start_timer", function(response) {
+                    console.log(response);
+                });
+            }, true);
+            v.addEventListener("pause", function() { 
+                console.log('video stopped...');
+                chrome.runtime.sendMessage("vid_stopped", function(response) {
+                    console.log(response);
+                });
+            }, true);
+        } else {
+            console.log("aw no video??!");
+            chrome.runtime.sendMessage("no_vid");
+        };
 
-$(window).bind('hashchange', function() { 
-    console.log('window altered');
-    var v = document.getElementsByTagName("video")[0];
-    if (v != null){
-        v.addEventListener("play", function() { 
-            console.log('video playing...');
-        }, true);
-    };
-});
+        oldURL = currentURL;
+    }
+
+    oldURL = window.location.href;
+    setInterval(function() {
+        checkURLchange(window.location.href);
+    }, 500);
+}
+
+checkURLchange();
+
 
 
 console.log("chrome extension working...");
-var currentPopupOn = "popup";
 
 
 // show popups
@@ -156,9 +181,9 @@ $(function() {
 
 
 // send message to start timer, runs when page reloaded
-chrome.runtime.sendMessage("start_timer", function(response) {
-    console.log(response);
-});
+//chrome.runtime.sendMessage("start_timer", function(response) {
+    //console.log(response);
+//});
 
 
 

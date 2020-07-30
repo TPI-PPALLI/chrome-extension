@@ -6,7 +6,7 @@ let strikeCount = 1;
 let strikeOut = false;
 
 // in milliseconds
-let breakInterval = 60000; // 30min is 1800000
+let breakInterval = 6000; // 30min is 1800000
 let watchInterval = 10000;
 let pauseInterval = 5000;
 
@@ -58,6 +58,8 @@ let Timer = function(callback, time) {
     }
 }
 
+let runTimer = false;
+
 
 // set timers to call each other recursively
 let watchTimer = new Timer(function () {
@@ -106,7 +108,7 @@ function messageContent(message) {
         tabs.forEach(function(tab) {
             if (message == "open_popup" + strikeCount){
                 chrome.tabs.executeScript(
-                    {code: "document.getElementsByTagName('video')[0].pause()"}
+                    {code: "var v = document.getElementsByTagName('video')[0]; if (v!=null){v.pause()}"}
                 );
                 console.log("video stopped");
             }
@@ -146,14 +148,45 @@ chrome.runtime.onMessage.addListener(
             "from a content script:" + sender.tab.url :
             "from the extension");
 
-        if (request === "start_timer") { // called when a new youtube page is opened
+        if  (request == "vid_stopped" || request == "no_vid"){
+            if (!timerStarted) {
+            } else if (watchTimer.isRunning()) {
+                //alert("watch timer running");
+                // pause the watch timer, and start pause timer
+                watchTimer.pause();
+                pauseTimer.start();
+            } else if (breakTimer.isRunning()){
+                breakTimer.resume();
+            }
+            if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") {
+            //alert("send on updated");
+            sendTimestamp(tabs[0]);
+        }
+            sendResponse("paused watchTimer");
+        }
+
+         else if (request === "start_timer") { // called when a new youtube page is opened
             if (!(breakTimer.isRunning() || watchTimer.isRunning())) { // only start timer once
                 watchTimer.start();
                 timerStarted = true;
-                
-                
                 //alert("timer started");
+            } else if (!timerStarted) { // pause timer done or break completed
+                //alert("timer restarted");
+                strikeCount = 1;
+                watchTimer.start();
+                timerStarted = true;
+            } else if (breakTimer.isRunning()) { // make sure popup is showing
+                if (strikeOut) {
+                    messageContent("open_strikeout");
+                } else {
+                    messageContent("open_popup" + strikeCount);
+                }
+            } else {
+                console.log("timer resumed");
+                pauseTimer.stop();
+                watchTimer.resume();
             }
+            
             // listeners must send responses to make sure port is not closed before response received
             sendResponse("timer started in background.js");
         }
@@ -175,7 +208,7 @@ chrome.runtime.onMessage.addListener(
                 breakTimer.start();
                 strikeCount = 0; // reset strikeCount
             } else {
-                watchTimer.start();
+                    watchTimer.start();
             }
             strikeCount++;
             sendResponse("strike changed to " + strikeCount);
@@ -242,60 +275,4 @@ chrome.tabs.onActivated.addListener(
     }
 )
 
-
 // detect when a tab's url changes, do the same thing as when the active tab switched
-chrome.webNavigation.onCompleted.addListener(function (tabId, changeInfo, tab) {
-    // get tab url
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        if (tabs[0].url.match(/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?.*/gm)) {
-            stoppedWatching = false; // enable watch timer to start after break is complete
-
-            if (pauseTimer.isRunning()) { // pause timer running
-                //alert("pause timer running");
-                pauseTimer.stop();
-                watchTimer.resume();
-
-            } else if (!timerStarted) { // pause timer done or break completed
-                //alert("timer restarted");
-                strikeCount = 1;
-                watchTimer.start();
-                timerStarted = true;
-
-            }
-            if (breakTimer.isRunning()) { // make sure popup is showing
-                if (strikeOut) {
-                    messageContent("open_strikeout");
-                } else {
-                    messageContent("open_popup" + strikeCount);
-                }
-            }
-
-        } else { // not sure if we need this part
-            //alert("switched to not youtube");
-            if (breakTimer.isRunning()) {
-                //alert("break timer running");
-                // let break timer finish as usual
-                stoppedWatching = true; // prevent watch timer from starting after break complete
-
-            } else if (watchTimer.isRunning()) {
-                //alert("watch timer running");
-                // pause the watch timer, and start pause timer
-                watchTimer.pause();
-                pauseTimer.start();
-                // if we switched back to youtube while pause timer still on
-                // then we stop pause timer, and resume watch timer
-
-            } else { // this should only happen if youtube exited and timers all stop
-                //alert("no timer running");
-            }
-        }
-        if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") {
-            //alert("send on updated");
-            sendTimestamp(tabs[0]);
-        }
-    });
-});
-
-
-
-
