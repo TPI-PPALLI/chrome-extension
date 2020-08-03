@@ -6,15 +6,16 @@ let strikeCount = 1;
 let strikeOut = false;
 
 // in milliseconds
-let breakInterval = 6000; // 30min is 1800000
-let watchInterval = 10000;
-let pauseInterval = 5000;
+let breakInterval = 30000; // 30min is 1800000
+let watchInterval = 30000;
+let pauseInterval = breakInterval;
 
 let stoppedWatching = false;
 let timerStarted = false;
 
 // define timer class
-let Timer = function(callback, time) {
+let Timer = function(callback, time, enablecountdown) {
+    let countdownON = enablecountdown;
     let timerID;
     let remaining = time;
     let start;
@@ -24,6 +25,7 @@ let Timer = function(callback, time) {
         window.clearTimeout(timerID);
         running = false;
         remaining = time;
+        //if (countdownON) messageYoutube("stop_timer");
     }
     this.start = function() {
         window.clearTimeout(timerID);
@@ -31,10 +33,12 @@ let Timer = function(callback, time) {
         timerID = window.setTimeout(callback, time);
         running = true;
         remaining = time;
+        if (countdownON) sendYoutubeTimestamp();
     }
     this.pause = function() {
         window.clearTimeout(timerID);
         remaining -= Date.now() - start;
+        //if (countdownON) messageYoutube("pause_timer");
         //alert(remaining);
         running = false;
     };
@@ -52,9 +56,13 @@ let Timer = function(callback, time) {
         running = state;
     }
     this.getTimestamp = function() {
+        let resumeAllowed = running;
         this.pause();
-        this.resume();
-        return remaining;
+        if (resumeAllowed) { this.resume(); } // dont start timer if not running
+        let date = new Date(Date.now() + remaining); // change to remaining for ms
+        //alert("date: " + date);
+        return date;
+        //return remaining;
     }
 }
 
@@ -64,16 +72,16 @@ let runTimer = false;
 // set timers to call each other recursively
 let watchTimer = new Timer(function () {
     watchTimer.setRunning(false);
-    messageContent("open_popup" + strikeCount); // send message to content.js to open popup
+    messageYoutube("open_popup" + strikeCount); // send message to content.js to open popup
     breakTimer.start();
-}, watchInterval);
+}, watchInterval, true);
 
 
 let breakTimer = new Timer(function () {
     breakTimer.setRunning(false);
-    messageContent("close_popup" + strikeCount);
+    messageYoutube("close_popup" + strikeCount);
     if (strikeOut) {
-        messageContent("close_strikeout");
+        messageYoutube("close_strikeout");
         strikeOut = false;
     }
     strikeCount = 1; // reset strike count upon successful break completion
@@ -83,7 +91,7 @@ let breakTimer = new Timer(function () {
         timerStarted = false;
         pauseTimer.start();
     }
-}, breakInterval);
+}, breakInterval, true);
 
 
 // if watch timer is running but you switch tabs out of youtube, reset timers after pauseInterval
@@ -94,7 +102,7 @@ let pauseTimer = new Timer(function () {
     timerStarted = false;
     stoppedWatching = true;
     strikeCount = 1;
-}, pauseInterval)
+}, pauseInterval, true)
 
 
 // END OF GLOBAL VARIABLES
@@ -107,40 +115,56 @@ function redirect() {
 
 
 // helper to message content.js
-function messageContent(message) {
+function messageYoutube(toMessage) {
     chrome.tabs.query({url: "*://*.youtube.com/*"}, function (tabs) { // send message to all tabs with youtube url
         tabs.forEach(function(tab) {
-            if (message == "open_popup" + strikeCount){
+            if (toMessage == "open_popup" + strikeCount){
                 chrome.tabs.executeScript(
                     {code: "var v = document.getElementsByTagName('video')[0]; if (v!=null){v.pause()}"}
                 );
+
             }
-            chrome.tabs.sendMessage(tab.id, message, function (response) {
+            chrome.tabs.sendMessage(tab.id, {message: toMessage}, function (response) {
                 console.log(response);
-                
             });
         })
     });
 }
 
 
+function sendYoutubeTimestamp() {
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        sendTimestamp(tabs[0]);
+    });
+}
+
 // send timestamp to ppalli website
 function sendTimestamp(tab) {
-    if (tab.url === "https://tpi-ppalli.github.io/web-app/") {
+    //if (tab.url === "https://tpi-ppalli.github.io/web-app/") {
         let tmp = "0:0:0";
+        var ms = 0;
+        var type = "none";
         if (breakTimer.isRunning()) {
-            let ms = breakTimer.getTimestamp();
-            let hour = Math.floor(ms/3600000);
-            let minute = Math.floor((ms - (hour * 3600000)) / 60000);
-            let second = Math.floor((ms - (hour * 3600000) - (minute * 60000)) / 1000);
-            tmp = hour + ':' + minute + ':' + second;
+            ms = breakTimer.getTimestamp();
+            type = "breakTimer";
+        } else if (watchTimer.isRunning()) {
+            ms = watchTimer.getTimestamp();
+            type = "watchTimer";
+        } else if (pauseTimer.isRunning()) {
+            ms = pauseTimer.getTimestamp();
+            type = "pauseTimer";
         }
-        chrome.tabs.sendMessage(tab.id, {message: "change_timeStamp", time: tmp},
+        let hour = ms.getHours(); //Math.floor(ms/3600000);
+        let minute = ms.getMinutes(); //Math.floor((ms - (hour * 3600000)) / 60000);
+        let second = ms.getSeconds(); //Math.floor((ms - (hour * 3600000) - (minute * 60000)) / 1000);
+        tmp = hour + ":" + minute + ":" + second;
+
+        chrome.tabs.sendMessage(tab.id, {message: "change_timeStamp", time: tmp, timerType: type },
             function (response) {
                 console.log(response);
             });
         //alert("sending " + tmp);
-    }
+    //}
 }
 
 
@@ -166,11 +190,12 @@ chrome.runtime.onMessage.addListener(
                 // if video is stopped by the popup, we keep the breakTimer running even if the vid is stopped
                 sendResponse("breakTimer resumed");
             }
-            if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") {
+            /*
+            if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") { // this doesnt do anything?
                 sendTimestamp(tabs[0]);
             }
+             */
         }
-
          else if (request === "start_timer") { // called when a new youtube page is opened
             stoppedWatching = false;
             if (!(breakTimer.isRunning() || watchTimer.isRunning())) { // only start timer once
@@ -185,38 +210,37 @@ chrome.runtime.onMessage.addListener(
             } else if (breakTimer.isRunning()) { // make sure popup is showing
                 stoppedWatching = true;
                 if (strikeOut) {
-                    messageContent("open_strikeout");
+                    messageYoutube("open_strikeout");
                 } else {
-                    messageContent("open_popup" + strikeCount);
+                    messageYoutube("open_popup" + strikeCount);
                 }
             } else {
                 console.log("timer resumed");
                 pauseTimer.stop();
                 watchTimer.resume();
+                sendYoutubeTimestamp();
             }
             // listeners must send responses to make sure port is not closed before response received
             sendResponse("timer started in background.js");
         }
         else if (request === "strike_accepted") {
             redirect();
-            sendResponse("redirected to: " + theURL);
+            sendResponse("redirected to: " + strikeURL);
 
         } else if (request === "strike_ignored") {
             // dialog closed by content.js
             // close dialogs on all youtube tabs
-            messageContent("close_popup" + strikeCount);
+            messageYoutube("close_popup" + strikeCount);
             breakTimer.stop(); // stop the break timer
             watchTimer.stop(); // just in case
-             
-
             if (strikeCount === 3) {
                 stoppedWatching = true;
-                messageContent("open_strikeout"); // open the strikeout popup
+                messageYoutube("open_strikeout"); // open the strikeout popup
                 strikeOut = true;
                 breakTimer.start();
                 strikeCount = 0; // reset strikeCount
             } else if (!stoppedWatching) {
-                    watchTimer.start();
+                watchTimer.start();
             }
             strikeCount++;
             sendResponse("strike changed to " + strikeCount);
@@ -238,11 +262,14 @@ chrome.tabs.onActivated.addListener(
                     //alert("pause timer running");
                     pauseTimer.stop();
                     watchTimer.resume();
+                    sendYoutubeTimestamp();
+                    //sendTimestamp(tabs[0]);
 
                 } else if (!timerStarted) { // pause timer done or break completed
                     //alert("timer restarted");
                     strikeCount = 1;
                     watchTimer.start();
+                    //sendTimestamp(tabs[0]);
                     timerStarted = true;
                 }
                 // if break is incomplete do nothing, use normal procedure
@@ -255,9 +282,9 @@ chrome.tabs.onActivated.addListener(
                     // let break timer finish as usual
                     stoppedWatching = true;
                     if (strikeOut) { // make sure popup is open
-                        messageContent("open_strikeout");
+                        messageYoutube("open_strikeout");
                     } else {
-                        messageContent("open_popup" + strikeCount);
+                        messageYoutube("open_popup" + strikeCount);
                     }
                     stoppedWatching = true; // prevent watch timer from starting after break complete
 
@@ -285,3 +312,13 @@ chrome.tabs.onActivated.addListener(
 )
 
 // detect when a tab's url changes, do the same thing as when the active tab switched
+chrome.webNavigation.onCompleted.addListener(function (tabId, changeInfo, tab) {
+    // get tab url
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") {
+            //alert("send on updated");
+            sendTimestamp(tabs[0]);
+        }
+    });
+});
+
