@@ -21,7 +21,9 @@
     }
   ],
   "web_accessible_resources": [
-    "src/*.png"
+    "src/*.png",
+    "/static/*",
+    "index.html"
   ],
   "browser_action": {
     "default_popup": "index.html",
@@ -34,6 +36,4 @@
   },
   "content_security_policy": "script-src 'self' 'sha256-gGcM6HVHv1z7C0t4ZWxIWaiPEsqfCSDlsHfmZ6A54/k='; object-src 'self'",
   "permissions": ["alarms", "notifications", "storage", "activeTab", "tabs", "https://*/*", "http://*/*", "webNavigation"]
-
-
 }
