@@ -54,13 +54,14 @@ function startCountdown() {
 
 // receive timestamp from background.js
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.message === "change_timeStamp") {
+    if (request.message === "change_timeStamp" && request.timerType === "breakTimer") {
         clearInterval(countdownTimer); // stop the timer
         //alert("this: " + document.getElementById("Timer-num").innerText);
         let timestamp = request.time.split(":");
-        hour = timestamp[0];
-        minute = timestamp[1];
-        second = timestamp[2];
+        let date = new Date(Date.now());
+        hour = timestamp[0] - date.getHours();
+        minute = timestamp[1] - date.getMinutes();
+        second = timestamp[2] - date.getSeconds();
         //alert("hour: " + hour + " min: " + minute + " sec: " + second);
         updateCountdown();
         startCountdown();

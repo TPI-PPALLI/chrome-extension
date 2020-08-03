@@ -1,3 +1,16 @@
+.timer-dialog.ui-dialog {
+    background-color: #f86379 !important;
+    position: fixed;
+}
+.timer-dialog.ui-dialog .ui-dialog-titlebar {
+    background-color: #f86379 !important;
+    font-size: large;
+    color: #E3F1CF;
+}
+.timer-dialog.ui-dialog .ui-dialog-content {
+    display: none !important;
+}
+
 .no-close .ui-dialog-titlebar-close {
     background-color: #003eff;
     display: none;
@@ -6,7 +19,7 @@
 .ui-dialog {
     background-color: #003eff;
     position: absolute;
-    z-index: 1000;
+    z-index: 3000;
     width: 50%;
     height: 50%;
     border-radius: 10;
