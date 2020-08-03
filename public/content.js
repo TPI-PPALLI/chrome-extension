@@ -3,6 +3,7 @@
 // this is to use chrome functions like chrome.runtime.sendMessage
 /*global chrome*/
 
+
 var oldURL = "";
 var currentURL = window.location.href;
 function checkURLchange(currentURL){
@@ -36,11 +37,21 @@ function checkURLchange(currentURL){
     }, 500);
 }
 
+
 checkURLchange();
+
 
 console.log("chrome extension working...");
 
+
 // show popups
+
+
+// show youtube timer
+var timerDialog = document.createElement("div");
+timerDialog.id = "timerDialog_ID";
+document.body.append(timerDialog);
+
 
 // add strike 1 popup to dom
 var popup1 = document.createElement("div");
@@ -50,6 +61,7 @@ popup1.innerHTML = '<h1>First strike!</h1> <img style="width:70px;height:auto;" 
 document.body.append(popup1);
 document.getElementById('someImage').src = image1;
 
+
 // add strike 2 popup to dom
 var popup2 = document.createElement("div");
 popup2.id = "strike2_popup_ID";
@@ -57,6 +69,7 @@ let image2 = chrome.extension.getURL("src/ppalli_meditation.png");
 popup2.innerHTML = '<h1>Second strike!</h1> <img style="width:70px;height:auto;" id="someImage2" />';
 document.body.append(popup2);
 document.getElementById('someImage2').src = image2;
+
 
 // add strike 3 popup to dom
 var popup3 = document.createElement("div");
@@ -73,7 +86,25 @@ strike3popup.id = "strike_3_ID";
 document.body.append(strike3popup);
 
 
-// add functionality to strike 1 and 2 popup (jquery dialog)
+// timer functionality
+var time = "0:00:00";
+$(function() {
+    $( "#timerDialog_ID" ).dialog({
+        dialogClass: "no-close timer-dialog", // no-close to remove x button
+        title: "Next break in: " + time,
+        position: { my: "right bottom", at: "right-250 top+50"},
+        height: 50,
+        width: 250,
+        draggable: true,
+        autoOpen: true, // opens dialog when youtube is reloaded, set this to false later for timer
+        modal: false, // disables other functions on the page
+    });
+});
+//$("#timerDialog_ID .ui-dialog-titlebar").hide();
+
+
+
+// add functionality to popup (jquery dialog)
 $(function() {
     $( "#strike1_popup_ID" ).dialog({
         dialogClass: "no-close", // no-close to remove x button
@@ -100,6 +131,7 @@ $(function() {
     });
 });
 
+
 $(function() {
     $( "#strike2_popup_ID" ).dialog({
         dialogClass: "no-close", // no-close to remove x button
@@ -125,6 +157,7 @@ $(function() {
         },
     });
 });
+
 
 $(function() {
     $( "#strike3_popup_ID" ).dialog({
