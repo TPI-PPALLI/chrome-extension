@@ -11,8 +11,10 @@
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/*"],
-      "js": ["jquery.js", "jquery-ui.js","content.js"],
-      "css": ["jquery-ui.css", "content.css"]
+      "all_frames": true,
+      "js": ["jquery.js", "jquery-ui.js", "content.js"],
+      "css": ["jquery-ui.css", "content.css"],
+      "run_at": "document_end"
     },
     {
       "matches": ["*://*.tpi-ppalli.github.io/*"],
