@@ -47,10 +47,9 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" id="logo1"/>
         <img src={logo2} className="App-logo" alt="logo2" id="logo2" />
         <div>
-        <p>Welcome to <strong>PPALLI!</strong></p>
+        <img src={logo} className="App-logo" alt="logo" id="logo1"/>
         <hr class="solid"></hr>
         </div>
         <div id="main-body">
