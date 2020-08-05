@@ -323,14 +323,3 @@ chrome.runtime.onMessage.addListener(
             sendResponse("updating timestamp");
         }
     });
-
-// window.addEventListener("message", function(event) {
-//     if (event.source !== window) return;
-//     onDidReceiveMessage(event);
-// });
-
-// async function onDidReceiveMessage(event) {
-//     if (event.data.type && (event.data.type === "GET_EXTENSION_ID")) {
-//         document.postMessage({ type: "EXTENSION_ID_RESULT", extensionId: chrome.runtime.id }, "*");
-//     }
-// }

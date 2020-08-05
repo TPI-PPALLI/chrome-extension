@@ -23,13 +23,7 @@ function App() {
     },
   ];
 
-  const [extensionId, setExtensionId] = useState('');
-
-  useEffect(() => {
-    setExtensionId(chrome.runtime.id);
-    console.log(chrome.runtime.id);
-  }, []);
-
+  const extensionId = chrome.runtime.id;
   const [breakTimer, setBreakTimer] = useState(timeOptions[0].value);
   const [watchTimer, setWatchTimer] = useState(timeOptions[0].value);
   const setWatchOnChange = (e) => {

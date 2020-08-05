@@ -342,4 +342,3 @@ chrome.webNavigation.onCompleted.addListener(function (tabId, changeInfo, tab) {
         }
     });
 });
-
