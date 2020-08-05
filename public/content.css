@@ -82,6 +82,8 @@
     background: #F86379;
 }
 
-#someImage{
-    object-fit: contain;
+.popup-img{
+    height:200px;
+    width: auto;
+    align-items: center;
 }

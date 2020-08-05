@@ -1,6 +1,7 @@
 /*global chrome*/
 import React, { useState, useEffect } from "react";
-import logo from "./logoblob.png"; // consider taking away the blue background from this logo
+import logo from "./logo-ppalli.png"; // consider taking away the blue background from this logo
+import logo2 from "./logo-pause-circle.png";
 import "./App.css";
 import { timeOptions } from "./constants/timeOptions";
 
@@ -33,40 +34,42 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img src={logo} className="App-logo" alt="logo" id="logo1"/>
+        <img src={logo2} className="App-logo" alt="logo2" id="logo2" />
         <p>Welcome to Ppalli!</p>
-        <p>{extensionId}</p>
+        <div id="main-body">
         {/* separate these option selectors into its own react component*/}
-        <div className="selectholder">
-          <form className="customSelect">
-            <div className="select">
-              <select
-                id="notification-period"
-                onChange={(e) => setWatchOnChange(e)}
-              >
-                {timeOptions.map((o) => (
-                  <option value={o.value}>{o.label}</option>
-                ))}
-              </select>
-            </div>
-          </form>
+          <div className="selectholder">
+            <form className="customSelect">
+              <div className="select">
+                <select
+                  id="notification-period"
+                  onChange={(e) => setWatchOnChange(e)}
+                >
+                  {timeOptions.map((o) => (
+                    <option value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            </form>
+          </div>
+          <p>Your watch interval is set for every {watchTimer} minutes.</p>
+          <div className="selectholder">
+            <form className="customSelect">
+              <div className="select">
+                <select
+                  id="notification-period"
+                  onChange={(e) => setBreakOnChange(e)}
+                >
+                  {timeOptions.map((o) => (
+                    <option value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            </form>
+          </div>
+          <p>Your break interval is set for every {breakTimer} minutes.</p>
         </div>
-        <p>Your watch interval is set for every {watchTimer} minutes.</p>
-        <div className="selectholder">
-          <form className="customSelect">
-            <div className="select">
-              <select
-                id="notification-period"
-                onChange={(e) => setBreakOnChange(e)}
-              >
-                {timeOptions.map((o) => (
-                  <option value={o.value}>{o.label}</option>
-                ))}
-              </select>
-            </div>
-          </form>
-        </div>
-        <p>Your break interval is set for every {breakTimer} minutes.</p>
         <a
           className="button"
           href="https://tpi-ppalli.github.io/web-app/"

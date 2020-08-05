@@ -111,8 +111,8 @@ document.body.append(timerDialog);
 // add strike 1 popup to dom
 var popup1 = document.createElement("div");
 popup1.id = "strike1_popup_ID";
-let image1 = chrome.extension.getURL("src/ppalli_exercise.png");
-popup1.innerHTML = '<h1>First strike!</h1> <img style="width:70px;height:auto;" id="someImage" />';
+let image1 = chrome.extension.getURL("src/strikes/strike 1 meditation.png");
+popup1.innerHTML = '<img id="someImage" class="popup-img"/>';
 document.body.append(popup1);
 document.getElementById('someImage').src = image1;
 
@@ -120,8 +120,8 @@ document.getElementById('someImage').src = image1;
 // add strike 2 popup to dom
 var popup2 = document.createElement("div");
 popup2.id = "strike2_popup_ID";
-let image2 = chrome.extension.getURL("src/ppalli_meditation.png");
-popup2.innerHTML = '<h1>Second strike!</h1> <img style="width:70px;height:auto;" id="someImage2" />';
+let image2 = chrome.extension.getURL("src/strikes/strike 2 meditation.png");
+popup2.innerHTML = '<img id="someImage2" class="popup-img"/>';
 document.body.append(popup2);
 document.getElementById('someImage2').src = image2;
 
@@ -129,8 +129,8 @@ document.getElementById('someImage2').src = image2;
 // add strike 3 popup to dom
 var popup3 = document.createElement("div");
 popup3.id = "strike3_popup_ID";
-let image3 = chrome.extension.getURL("src/ppalli_2_strike.png");
-popup3.innerHTML = '<h1>Third strike!</h1> <img style="width:70px;height:auto;" id="someImage3" />';
+let image3 = chrome.extension.getURL("src/strikes/strike 3 meditation.png");
+popup3.innerHTML = '<img id="someImage3" class="popup-img"/>';
 document.body.append(popup3);
 document.getElementById('someImage3').src = image3;
 
