@@ -78,3 +78,8 @@
   position: relative;
   display: inline-block;
 }
+
+hr.solid {
+  border-top: 1px solid white;
+  margin-bottom: 10%;
+}

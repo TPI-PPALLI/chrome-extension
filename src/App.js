@@ -36,7 +36,10 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" id="logo1"/>
         <img src={logo2} className="App-logo" alt="logo2" id="logo2" />
-        <p>Welcome to Ppalli!</p>
+        <div>
+        <p>Welcome to <strong>PPALLI!</strong></p>
+        <hr class="solid"></hr>
+        </div>
         <div id="main-body">
         {/* separate these option selectors into its own react component*/}
           <div className="selectholder">
@@ -53,7 +56,7 @@ function App() {
               </div>
             </form>
           </div>
-          <p>Your watch interval is set for every {watchTimer} minutes.</p>
+          <p>Your <strong>watch interval</strong> is set for every <strong>{watchTimer} minutes</strong>.</p>
           <div className="selectholder">
             <form className="customSelect">
               <div className="select">
@@ -68,7 +71,7 @@ function App() {
               </div>
             </form>
           </div>
-          <p>Your break interval is set for every {breakTimer} minutes.</p>
+          <p>Your <strong>break interval</strong> is set for every <strong>{breakTimer} minutes</strong>.</p>
         </div>
         <a
           className="button"
