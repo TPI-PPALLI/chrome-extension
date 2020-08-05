@@ -1,5 +1,5 @@
 /*global chrome*/
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import logo from "./logo-ppalli.png"; // consider taking away the blue background from this logo
 import logo2 from "./logo-pause-circle.png";
 import "./App.css";
