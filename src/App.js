@@ -114,7 +114,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Visit us
+          Visit our website!
         </a>
       </header>
     </div>
