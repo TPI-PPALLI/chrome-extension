@@ -170,80 +170,101 @@ function sendTimestamp(tab) {
 
 // listen for messages from content.js
 chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
+    function (request, sender, sendResponse) {
         console.log(sender.tab ?
             "from a content script:" + sender.tab.url :
             "from the extension");
 
-        if  (request == "vid_stopped" || request == "no_vid"){
-            stoppedWatching = true;
-            if (!timerStarted) {
-                // if no timer started and there's no vid playing then nothing happens
-                sendResponse("No timer started");
-            } else if (watchTimer.isRunning()) {
-                // pause the watch timer, and start pause timer when video stops
-                watchTimer.pause();
-                pauseTimer.start();
-                sendResponse("watchTimer stopped");
-            } else if (breakTimer.isRunning()){
+        if (typeof request !== 'object') {
+            if (request == "vid_stopped" || request == "no_vid") {
                 stoppedWatching = true;
-                // if video is stopped by the popup, we keep the breakTimer running even if the vid is stopped
-                sendResponse("breakTimer resumed");
-            }
-            /*
-            if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") { // this doesnt do anything?
-                sendTimestamp(tabs[0]);
-            }
-             */
-        }
-         else if (request === "start_timer") { // called when a new youtube page is opened
-            stoppedWatching = false;
-            if (!(breakTimer.isRunning() || watchTimer.isRunning())) { // only start timer once
-                watchTimer.start();
-                timerStarted = true;
-                //alert("timer started");
-            } else if (!timerStarted) { // pause timer done or break completed
-                //alert("timer restarted");
-                strikeCount = 1;
-                watchTimer.start();
-                timerStarted = true;
-            } else if (breakTimer.isRunning()) { // make sure popup is showing
-                stoppedWatching = true;
-                if (strikeOut) {
-                    messageYoutube("open_strikeout");
-                } else {
-                    messageYoutube("open_popup" + strikeCount);
+                if (!timerStarted) {
+                    // if no timer started and there's no vid playing then nothing happens
+                    sendResponse("No timer started");
+                } else if (watchTimer.isRunning()) {
+                    // pause the watch timer, and start pause timer when video stops
+                    watchTimer.pause();
+                    pauseTimer.start();
+                    sendResponse("watchTimer stopped");
+                } else if (breakTimer.isRunning()) {
+                    stoppedWatching = true;
+                    // if video is stopped by the popup, we keep the breakTimer running even if the vid is stopped
+                    sendResponse("breakTimer resumed");
                 }
-            } else {
-                console.log("timer resumed");
-                pauseTimer.stop();
-                watchTimer.resume();
-                sendYoutubeTimestamp();
-            }
-            // listeners must send responses to make sure port is not closed before response received
-            sendResponse("timer started in background.js");
-        }
-        else if (request === "strike_accepted") {
-            redirect();
-            sendResponse("redirected to: " + strikeURL);
+                /*
+                if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") { // this doesnt do anything?
+                    sendTimestamp(tabs[0]);
+                }
+                 */
+            } else if (request === "start_timer") { // called when a new youtube page is opened
+                stoppedWatching = false;
+                if (!(breakTimer.isRunning() || watchTimer.isRunning())) { // only start timer once
+                    watchTimer.start();
+                    timerStarted = true;
+                    //alert("timer started");
+                } else if (!timerStarted) { // pause timer done or break completed
+                    //alert("timer restarted");
+                    strikeCount = 1;
+                    watchTimer.start();
+                    timerStarted = true;
+                } else if (breakTimer.isRunning()) { // make sure popup is showing
+                    stoppedWatching = true;
+                    if (strikeOut) {
+                        messageYoutube("open_strikeout");
+                    } else {
+                        messageYoutube("open_popup" + strikeCount);
+                    }
+                } else {
+                    console.log("timer resumed");
+                    pauseTimer.stop();
+                    watchTimer.resume();
+                    sendYoutubeTimestamp();
+                }
+                // listeners must send responses to make sure port is not closed before response received
+                sendResponse("timer started in background.js");
+            } else if (request === "strike_accepted") {
+                redirect();
+                sendResponse("redirected to: " + strikeURL);
 
-        } else if (request === "strike_ignored") {
-            // dialog closed by content.js
-            // close dialogs on all youtube tabs
-            messageYoutube("close_popup" + strikeCount);
-            breakTimer.stop(); // stop the break timer
-            watchTimer.stop(); // just in case
-            if (strikeCount === 3) {
-                stoppedWatching = true;
-                messageYoutube("open_strikeout"); // open the strikeout popup
-                strikeOut = true;
-                breakTimer.start();
-                strikeCount = 0; // reset strikeCount
-            } else if (!stoppedWatching) {
-                watchTimer.start();
+            } else if (request === "strike_ignored") {
+                // dialog closed by content.js
+                // close dialogs on all youtube tabs
+                messageYoutube("close_popup" + strikeCount);
+                breakTimer.stop(); // stop the break timer
+                watchTimer.stop(); // just in case
+                if (strikeCount === 3) {
+                    stoppedWatching = true;
+                    messageYoutube("open_strikeout"); // open the strikeout popup
+                    strikeOut = true;
+                    breakTimer.start();
+                    strikeCount = 0; // reset strikeCount
+                } else if (!stoppedWatching) {
+                    watchTimer.start();
+                }
+                strikeCount++;
+                sendResponse("strike changed to " + strikeCount);
             }
-            strikeCount++;
-            sendResponse("strike changed to " + strikeCount);
+
+        } else if (typeof request === 'object' && request !== null) {
+            if (request.message === "break") {
+                breakTimer.stop();
+                watchTimer.stop();
+                strikeOut = false;
+                strikeCount = 0;
+                breakInterval = request.time * 60000;
+                stoppedWatching = true;
+                breakTimer.start();
+                sendResponse("break interval: " + breakInterval + " request.time: " + request.time);
+            } else if (request.message === "watch") {
+                breakTimer.stop();
+                watchTimer.stop();
+                strikeOut = false;
+                strikeCount = 0;
+                watchInterval = request.time * 60000;
+                stoppedWatching = false;
+                watchTimer.start();
+                sendResponse("watch interval: " + watchInterval + " request.time " + request.time);
+            }
         }
     });
 

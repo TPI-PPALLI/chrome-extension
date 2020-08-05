@@ -266,8 +266,6 @@ $(function() {
     //console.log(response);
 //});
 
-
-
 // receive messages from background
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -308,8 +306,7 @@ chrome.runtime.onMessage.addListener(
             minute = 0;
             second = 0;
             sendResponse("stopping timer");
-        }
-        else if (request.message == "change_timeStamp") {
+        } else if (request.message == "change_timeStamp") {
             let timestamp = request.time.split(":");
             hour = timestamp[0];
             minute = timestamp[1];
@@ -326,3 +323,14 @@ chrome.runtime.onMessage.addListener(
             sendResponse("updating timestamp");
         }
     });
+
+// window.addEventListener("message", function(event) {
+//     if (event.source !== window) return;
+//     onDidReceiveMessage(event);
+// });
+
+// async function onDidReceiveMessage(event) {
+//     if (event.data.type && (event.data.type === "GET_EXTENSION_ID")) {
+//         document.postMessage({ type: "EXTENSION_ID_RESULT", extensionId: chrome.runtime.id }, "*");
+//     }
+// }
