@@ -168,7 +168,7 @@ function sendTimestamp(tab) {
 }
 
 
-// listen for messages from content.js
+// listen for messages from content.js and frontend
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         console.log(sender.tab ?

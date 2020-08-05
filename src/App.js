@@ -1,5 +1,5 @@
 /*global chrome*/
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logo from "./logoblob.png"; // consider taking away the blue background from this logo
 import "./App.css";
 
@@ -23,23 +23,12 @@ function App() {
     },
   ];
 
-  const extensionId = 'onpbgkkoaomobjbkfbnkabeokcbebhcl';
-  // function getExtensionId() {
-  //   window.postMessage({ type: "GET_EXTENSION_ID" }, "*");
-  // }
+  const [extensionId, setExtensionId] = useState('');
 
-  // useEffect(() => {
-  //   // Set up event listeners from Content script
-  //   getExtensionId();
-  //   window.addEventListener("message", function (event) {
-  //     if (event.source !== window) return;
-  //     if (event.data.type && event.data.type === "EXTENSION_ID_RESULT") {
-  //       setExtensionId(event.data.extensionId);
-  //       console.log("inside if" + extensionId);
-  //     }
-  //     console.log("outside if" + extensionId);
-  //   });
-  // }, []);
+  useEffect(() => {
+    setExtensionId(chrome.runtime.id);
+    console.log(chrome.runtime.id);
+  }, []);
 
   const [breakTimer, setBreakTimer] = useState(timeOptions[0].value);
   const [watchTimer, setWatchTimer] = useState(timeOptions[0].value);
