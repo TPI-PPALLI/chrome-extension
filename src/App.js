@@ -4,11 +4,13 @@ import logo from "./logo-ppalli.png"; // consider taking away the blue backgroun
 import logo2 from "./logo-pause-circle.png";
 import "./App.css";
 import { timeOptions } from "./constants/timeOptions";
+import { activityOptions } from "./constants/activityOptions";
 
 function App() {
   const extensionId = chrome.runtime.id;
   const [breakTimer, setBreakTimer] = useState(timeOptions[0].value);
   const [watchTimer, setWatchTimer] = useState(timeOptions[0].value);
+  const [activity, setActivity] = useState(activityOptions[0].value);
   const setWatchOnChange = (e) => {
     setWatchTimer(e.target.value);
     chrome.runtime.sendMessage(
@@ -29,6 +31,17 @@ function App() {
         console.log(response);
       }
     );
+  };
+
+  const setActivityOnChange = (e) => {
+    setActivity(e.target.value);
+    // chrome.runtime.sendMessage(
+    //   extensionId,
+    //   { message: "break", time: e.target.value },
+    //   function (response) {
+    //     console.log(response);
+    //   }
+    // );
   };
 
   return (
@@ -76,6 +89,24 @@ function App() {
         <div>
         <p>Set your <strong>activity</strong></p>
         <hr class="solid"></hr>
+        </div>
+        <div id="main-body">
+        {/* separate these option selectors into its own react component*/}
+          <div className="selectholder">
+            <form className="customSelect">
+              <div className="select">
+                <select
+                  id="notification-period"
+                  onChange={(e) => setActivityOnChange(e)}
+                >
+                  {activityOptions.map((o) => (
+                    <option value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            </form>
+          </div>
+          <p>On your next break, you plan to <strong>{activity}</strong>.</p>
         </div>
         <a
           className="button"
