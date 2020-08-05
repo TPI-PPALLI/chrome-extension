@@ -73,6 +73,10 @@ function App() {
           </div>
           <p>Your <strong>break interval</strong> is set for every <strong>{breakTimer} minutes</strong>.</p>
         </div>
+        <div>
+        <p>Set your <strong>activity</strong></p>
+        <hr class="solid"></hr>
+        </div>
         <a
           className="button"
           href="https://tpi-ppalli.github.io/web-app/"
