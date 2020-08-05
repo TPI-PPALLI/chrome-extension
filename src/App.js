@@ -2,42 +2,32 @@
 import React, { useState, useEffect } from "react";
 import logo from "./logoblob.png"; // consider taking away the blue background from this logo
 import "./App.css";
+import { timeOptions } from "./constants/timeOptions";
 
 function App() {
-  const timeOptions = [
-    {
-      label: "15 minutes",
-      value: 15,
-    },
-    {
-      label: "30 minutes",
-      value: 30,
-    },
-    {
-      label: "45 minutes",
-      value: 45,
-    },
-    {
-      label: "60 minutes",
-      value: 60,
-    },
-  ];
-
   const extensionId = chrome.runtime.id;
   const [breakTimer, setBreakTimer] = useState(timeOptions[0].value);
   const [watchTimer, setWatchTimer] = useState(timeOptions[0].value);
   const setWatchOnChange = (e) => {
     setWatchTimer(e.target.value);
-    chrome.runtime.sendMessage(extensionId, { message: "watch", time: e.target.value }, function (response) {
-      console.log(response);
-    })
+    chrome.runtime.sendMessage(
+      extensionId,
+      { message: "watch", time: e.target.value },
+      function (response) {
+        console.log(response);
+      }
+    );
   };
 
   const setBreakOnChange = (e) => {
     setBreakTimer(e.target.value);
-    chrome.runtime.sendMessage(extensionId, { message: "break", time: e.target.value }, function (response) {
-      console.log(response);
-    })
+    chrome.runtime.sendMessage(
+      extensionId,
+      { message: "break", time: e.target.value },
+      function (response) {
+        console.log(response);
+      }
+    );
   };
 
   return (
