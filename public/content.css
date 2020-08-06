@@ -11,8 +11,12 @@
     display: none !important;
 }
 
+.popup.ui-dialog .ui-dialog-titlebar{
+    display: none;
+}
+
 .no-close .ui-dialog-titlebar-close {
-    background-color: #003eff;
+    background-color: #3246db;
     display: none;
 }
 
@@ -30,24 +34,27 @@
 }
 
 .ui-dialog .ui-dialog-titlebar {
-    background-color: #003eff;
+    background-color: #3246db;
     font-size: large;
     color: #E3F1CF;
 }
+
+
 .ui-dialog .ui-dialog-content {
 	border: 0;
-	padding: 20px;
+	padding: 5px;
     font-size: medium;
     color:#E3F1CF;
-    background-color: #003eff;
-	overflow: auto;
+    background-color: #3246db;
+    overflow: auto;
+    border-radius: 20px;
 }
 .ui-dialog .ui-dialog-buttonpane {
 	text-align: center;
 	border-width: 1px 0 0 0;
 	background-image: none;
 	margin-top: .5em;
-    padding: 5px 75px;
+    padding: 5px 95px;
     background-color: #F86379;
     border-radius: 20px;
 }
@@ -56,9 +63,11 @@
     
 }
 .ui-dialog .ui-dialog-buttonpane button {
-    margin: 15px;
+    margin: 10px;
+    margin-left: 30px;
+    margin-right: 30px;
     width: auto;
-    padding: 10px 25px;
+    padding: 7px 25px;
 	cursor: pointer;
     font-size: 20px;
     color: #000000;
@@ -83,7 +92,9 @@
 }
 
 .popup-img{
-    height:200px;
+    margin-left: 20px;
+    margin-top: 40px;
+    height:180px;
     width: auto;
     align-items: center;
 }

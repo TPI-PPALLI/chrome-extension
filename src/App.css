@@ -84,3 +84,8 @@ hr.solid {
   margin-bottom: 10%;
   width: 175px;
 }
+
+.subtitle{
+  font-size: 15px;
+  padding: 5px;
+}

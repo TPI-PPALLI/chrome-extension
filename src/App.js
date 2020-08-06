@@ -49,9 +49,9 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" id="logo1"/>
         <img src={logo2} className="App-logo" alt="logo2" id="logo2" />
-        <div>
-        <p>Welcome to <strong>PPALLI!</strong></p>
-        <hr class="solid"></hr>
+        <div className="title">
+          <p>Welcome to <strong>PPALLI!</strong></p>
+          <hr class="solid"></hr>
         </div>
         <div id="main-body">
         {/* separate these option selectors into its own react component*/}
@@ -86,9 +86,9 @@ function App() {
           </div>
           <p>Your <strong>break interval</strong> is set for every <strong>{breakTimer} minutes</strong>.</p>
         </div>
-        <div>
-        <p>Set your <strong>activity</strong></p>
-        <hr class="solid"></hr>
+        <div className="subtitle">
+          <p>Set your <strong>activity</strong></p>
+          <hr class="solid"></hr>
         </div>
         <div id="main-body">
         {/* separate these option selectors into its own react component*/}

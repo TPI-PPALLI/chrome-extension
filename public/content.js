@@ -138,7 +138,10 @@ document.getElementById('someImage3').src = image3;
 // add strike 3 popup to dom
 var strike3popup = document.createElement("div");
 strike3popup.id = "strike_3_ID";
+let image4 = chrome.extension.getURL("src/strikes/strike out meditation.png");
+strike3popup.innerHTML = '<img id="someImage4" class="popup-img"/>';
 document.body.append(strike3popup);
+document.getElementById('someImage4').src = image4;
 
 
 // timer functionality
@@ -160,12 +163,11 @@ $(function() {
 // add functionality to popup (jquery dialog)
 $(function() {
     $( "#strike1_popup_ID" ).dialog({
-        dialogClass: "no-close", // no-close to remove x button
-        title: "STRIKE ",
+        dialogClass: "no-close popup", // no-close to remove x button
         resizable: false,
         draggable: false,
-        height: 300,
-        width: 450,
+        height: 370,
+        width: 550,
         autoOpen: false, // opens dialog when youtube is reloaded, set this to false later for timer
         modal: true, // disables other functions on the page
         buttons: {
@@ -187,12 +189,11 @@ $(function() {
 
 $(function() {
     $( "#strike2_popup_ID" ).dialog({
-        dialogClass: "no-close", // no-close to remove x button
-        title: "STRIKE ",
+        dialogClass: "no-close popup", // no-close to remove x button
         resizable: false,
         draggable: false,
-        height: 300,
-        width: 450,
+        height: 370,
+        width: 550,
         autoOpen: false, // opens dialog when youtube is reloaded, set this to false later for timer
         modal: true, // disables other functions on the page
         buttons: {
@@ -214,12 +215,11 @@ $(function() {
 
 $(function() {
     $( "#strike3_popup_ID" ).dialog({
-        dialogClass: "no-close", // no-close to remove x button
-        title: "STRIKE ",
+        dialogClass: "no-close popup", // no-close to remove x button
         resizable: false,
         draggable: false,
-        height: 300,
-        width: 450,
+        height: 370,
+        width: 550,
         autoOpen: false, // opens dialog when youtube is reloaded, set this to false later for timer
         modal: true, // disables other functions on the page
         buttons: {
@@ -245,9 +245,9 @@ $(function() {
         dialogClass: "no-close",
         title: "STRIKE OUT!",
         resizable: false,
-        height: 300,
+        height: 370,
+        width: 550,
         draggable: false,
-        width: 450,
         autoOpen: false,
         modal: true,
         buttons: {
