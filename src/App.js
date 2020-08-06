@@ -1,5 +1,5 @@
 /*global chrome*/
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import logo from "./logo-ppalli.png"; // consider taking away the blue background from this logo
 import logo2 from "./logo-pause-circle.png";
 import "./App.css";
@@ -47,11 +47,10 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" id="logo1"/>
         <img src={logo2} className="App-logo" alt="logo2" id="logo2" />
-        <div className="title">
-          <p>Welcome to <strong>PPALLI!</strong></p>
-          <hr class="solid"></hr>
+        <div>
+        <img src={logo} className="App-logo" alt="logo" id="logo1"/>
+        <hr class="solid"></hr>
         </div>
         <div id="main-body">
         {/* separate these option selectors into its own react component*/}
