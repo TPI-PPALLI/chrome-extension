@@ -1,7 +1,7 @@
 /*global chrome*/
 import React, { useState } from "react";
-import logo from "./logo-ppalli.png"; // consider taking away the blue background from this logo
-import logo2 from "./logo-pause-circle.png";
+import logo from "./assets/logo-ppalli.png";
+import logo2 from "./assets/logo-pause-circle.png";
 import "./App.css";
 import { timeOptions } from "./constants/timeOptions";
 import { activityOptions } from "./constants/activityOptions";
