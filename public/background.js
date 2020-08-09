@@ -7,8 +7,8 @@ let strikeCount = 1;
 let strikeOut = false;
 
 // in milliseconds
-let breakInterval = 30000; // 30min is 1800000
-let watchInterval = 30000;
+let breakInterval = 10000; // 30min is 1800000
+let watchInterval = 10000;
 let pauseInterval = breakInterval;
 
 let stoppedWatching = false;
@@ -133,7 +133,7 @@ function redirect() {
 function messageYoutube(toMessage) {
     chrome.tabs.query({url: "*://*.youtube.com/*"}, function (tabs) { // send message to all tabs with youtube url
         tabs.forEach(function(tab) {
-            if (toMessage == "open_popup" + strikeCount || toMessage == "open_strikeout"){
+            if (toMessage == "open_popup" + strikeCount || toMessage == "open_strikeout") {
                 chrome.tabs.executeScript(
                     {code: "var v = document.getElementsByTagName('video')[0]; if (v!=null){v.pause()}"}
                 );
@@ -188,7 +188,7 @@ chrome.runtime.onMessage.addListener(
             "from the extension");
 
         if (typeof request !== 'object') {
-            if (request == "vid_stopped" || request == "no_vid") {
+            if (request === "vid_stopped" || request === "no_vid") {
                 stoppedWatching = true;
                 if (!timerStarted) {
                     // if no timer started and there's no vid playing then nothing happens
@@ -251,7 +251,7 @@ chrome.runtime.onMessage.addListener(
                 sendResponse("redirected to: " + strikeURL);
             }
 
-        if  (request == "vid_stopped" || request == "no_vid"){
+        if  (request === "vid_stopped" || request === "no_vid"){
             stoppedWatching = true;
             if (!timerStarted) {
                 // if no timer started and there's no vid playing then nothing happens
