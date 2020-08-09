@@ -1,5 +1,6 @@
 
 /*global chrome*/
+
 // timer is done here so we could potentially manage multiple tabs
 let strikeURL = "https://tpi-ppalli.github.io/web-app/"; // where to redirect when strike is accepted
 let strikeCount = 1;
@@ -7,11 +8,12 @@ let strikeOut = false;
 
 // in milliseconds
 let breakInterval = 30000; // 30min is 1800000
-let watchInterval = 30000;
+let watchInterval = 10000;
 let pauseInterval = breakInterval;
 
 let stoppedWatching = false;
 let timerStarted = false;
+let prevIgnored = false;
 
 // define timer class
 let Timer = function(callback, time, enablecountdown) {
@@ -22,10 +24,12 @@ let Timer = function(callback, time, enablecountdown) {
     let running = false; // track if timer is running
 
     this.stop = function() {
-        window.clearTimeout(timerID);
-        running = false;
-        remaining = time;
-        //if (countdownON) messageYoutube("stop_timer");
+        if (running) {
+            window.clearTimeout(timerID);
+            running = false;
+            remaining = time;
+            timerStarted = false;
+        }
     }
     this.start = function() {
         window.clearTimeout(timerID);
@@ -33,21 +37,25 @@ let Timer = function(callback, time, enablecountdown) {
         timerID = window.setTimeout(callback, time);
         running = true;
         remaining = time;
+        timerStarted = true;
         if (countdownON) sendYoutubeTimestamp();
     }
     this.pause = function() {
-        window.clearTimeout(timerID);
-        remaining -= Date.now() - start;
-        //if (countdownON) messageYoutube("pause_timer");
-        //alert(remaining);
-        running = false;
+        if (running) {
+            timerStarted = false;
+            window.clearTimeout(timerID);
+            remaining -= Date.now() - start;
+            running = false;
+        }
     };
-    this.resume = function() {
+    this.resume = function(sendTime) {
+        timerStarted = true;
         start = Date.now();
         window.clearTimeout(timerID);
         timerID = window.setTimeout(callback, remaining);
         //alert(remaining);
         running = true;
+        if (countdownON && (sendTime === undefined)) sendYoutubeTimestamp();
     };
     this.isRunning = function() {
         return running;
@@ -58,7 +66,7 @@ let Timer = function(callback, time, enablecountdown) {
     this.getTimestamp = function() {
         let resumeAllowed = running;
         this.pause();
-        if (resumeAllowed) { this.resume(); } // dont start timer if not running
+        if (resumeAllowed) { this.resume(false); } // dont start timer if not running
         let date = new Date(Date.now() + remaining); // change to remaining for ms
         //alert("date: " + date);
         return date;
@@ -68,9 +76,18 @@ let Timer = function(callback, time, enablecountdown) {
 
 let runTimer = false;
 
+function closeAllPopups() {
+    // close all popups just in case
+    messageYoutube("close_strikeout");
+    for (var i = 1; i <= 3; i++) {
+        messageYoutube("close_popup" + strikeCount)
+    }
+}
+
 
 // set timers to call each other recursively
 let watchTimer = new Timer(function () {
+    closeAllPopups();
     watchTimer.setRunning(false);
     messageYoutube("open_popup" + strikeCount); // send message to content.js to open popup
     breakTimer.start();
@@ -79,23 +96,21 @@ let watchTimer = new Timer(function () {
 
 let breakTimer = new Timer(function () {
     breakTimer.setRunning(false);
-    messageYoutube("close_popup" + strikeCount);
-    if (strikeOut) {
-        messageYoutube("close_strikeout");
-        strikeOut = false;
-    }
+    closeAllPopups();
     strikeCount = 1; // reset strike count upon successful break completion
     if (!stoppedWatching) {
         watchTimer.start();
     } else {
         timerStarted = false;
-        pauseTimer.start();
+        //pauseTimer.start();
     }
 }, breakInterval, true);
 
 
 // if watch timer is running but you switch tabs out of youtube, reset timers after pauseInterval
 let pauseTimer = new Timer(function () {
+    // close all popups just in case
+    closeAllPopups();
     pauseTimer.setRunning(false);
     watchTimer.stop();
     breakTimer.stop();
@@ -105,7 +120,7 @@ let pauseTimer = new Timer(function () {
 }, pauseInterval, true)
 
 
-// END OF GLOBAL VARIABLES
+// END OF GLOBAL VARIABLES //////////////////////////////////////////////////////////////////////////////////////////
 
 
 // cannot call from content.js so need to call here
@@ -118,11 +133,10 @@ function redirect() {
 function messageYoutube(toMessage) {
     chrome.tabs.query({url: "*://*.youtube.com/*"}, function (tabs) { // send message to all tabs with youtube url
         tabs.forEach(function(tab) {
-            if (toMessage == "open_popup" + strikeCount){
+            if (toMessage == "open_popup" + strikeCount || toMessage == "open_strikeout"){
                 chrome.tabs.executeScript(
                     {code: "var v = document.getElementsByTagName('video')[0]; if (v!=null){v.pause()}"}
                 );
-
             }
             chrome.tabs.sendMessage(tab.id, {message: toMessage}, function (response) {
                 console.log(response);
@@ -138,11 +152,11 @@ function sendYoutubeTimestamp() {
     });
 }
 
+
 // send timestamp to ppalli website
 function sendTimestamp(tab) {
-    //if (tab.url === "https://tpi-ppalli.github.io/web-app/") {
-        let tmp = "0:0:0";
-        var ms = 0;
+        let timestamp = "0:0:0";
+        var ms = new Date(Date.now());
         var type = "none";
         if (breakTimer.isRunning()) {
             ms = breakTimer.getTimestamp();
@@ -154,21 +168,18 @@ function sendTimestamp(tab) {
             ms = pauseTimer.getTimestamp();
             type = "pauseTimer";
         }
-        let hour = ms.getHours(); //Math.floor(ms/3600000);
-        let minute = ms.getMinutes(); //Math.floor((ms - (hour * 3600000)) / 60000);
-        let second = ms.getSeconds(); //Math.floor((ms - (hour * 3600000) - (minute * 60000)) / 1000);
-        tmp = hour + ":" + minute + ":" + second;
+        timestamp = ms.getTime(); // timestamp in ms, marks when the timer will end
+        //alert("ms: " + ms.getTime());
 
-        chrome.tabs.sendMessage(tab.id, {message: "change_timeStamp", time: tmp, timerType: type },
+        chrome.tabs.sendMessage(tab.id, {message: "change_timeStamp", time: timestamp, timerType: type },
             function (response) {
                 console.log(response);
             });
-        //alert("sending " + tmp);
-    //}
 }
 
 
-// listen for messages from content.js
+
+// listen for messages from content.js ////////////////////////////////////////////////////////////////////////////
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         console.log(sender.tab ?
@@ -180,50 +191,60 @@ chrome.runtime.onMessage.addListener(
             if (!timerStarted) {
                 // if no timer started and there's no vid playing then nothing happens
                 sendResponse("No timer started");
+
             } else if (watchTimer.isRunning()) {
                 // pause the watch timer, and start pause timer when video stops
                 watchTimer.pause();
                 pauseTimer.start();
                 sendResponse("watchTimer stopped");
+
             } else if (breakTimer.isRunning()){
                 stoppedWatching = true;
                 // if video is stopped by the popup, we keep the breakTimer running even if the vid is stopped
                 sendResponse("breakTimer resumed");
+
+            } else {
+                sendResponse("ERROR: request: " + request + " is not dealt with");
             }
-            /*
-            if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") { // this doesnt do anything?
-                sendTimestamp(tabs[0]);
-            }
-             */
-        }
-         else if (request === "start_timer") { // called when a new youtube page is opened
+
+        } else if (request === "vid_played") { // called when a video is played
             stoppedWatching = false;
-            if (!(breakTimer.isRunning() || watchTimer.isRunning())) { // only start timer once
-                watchTimer.start();
-                timerStarted = true;
-                //alert("timer started");
-            } else if (!timerStarted) { // pause timer done or break completed
+
+            if (watchTimer.isRunning()) {
+                // do nothing
+                sendResponse("watchTimer still running");
+
+            } else if (!timerStarted) { // pause timer done | break done | youtube opened first time | strike ignored
                 //alert("timer restarted");
-                strikeCount = 1;
+                if (!prevIgnored) strikeCount = 1; // reset strike count if no recent popup ignored
+                else prevIgnored = false; // for future
                 watchTimer.start();
                 timerStarted = true;
-            } else if (breakTimer.isRunning()) { // make sure popup is showing
+                sendResponse("timer started in background.js");
+
+            } else if (breakTimer.isRunning()) {
+                // make sure popup is showing
+                // popup is up so watch timer does not start
                 stoppedWatching = true;
                 if (strikeOut) {
                     messageYoutube("open_strikeout");
                 } else {
                     messageYoutube("open_popup" + strikeCount);
                 }
-            } else {
-                console.log("timer resumed");
+                sendResponse("video played, break time not complete");
+
+            } else if (pauseTimer.isRunning()){
                 pauseTimer.stop();
                 watchTimer.resume();
-                sendYoutubeTimestamp();
+                //sendYoutubeTimestamp();
+                sendResponse("watchTimer resumed");
+
+            } else {
+                // listeners must send responses to make sure port is not closed before response received
+                sendResponse("ERROR: vid play should not reach here");
             }
-            // listeners must send responses to make sure port is not closed before response received
-            sendResponse("timer started in background.js");
-        }
-        else if (request === "strike_accepted") {
+
+        } else if (request === "strike_accepted") {
             redirect();
             sendResponse("redirected to: " + strikeURL);
 
@@ -231,46 +252,63 @@ chrome.runtime.onMessage.addListener(
             // dialog closed by content.js
             // close dialogs on all youtube tabs
             messageYoutube("close_popup" + strikeCount);
-            breakTimer.stop(); // stop the break timer
+            breakTimer.stop(); // stop break timer
             watchTimer.stop(); // just in case
+            sendYoutubeTimestamp();
+
             if (strikeCount === 3) {
                 stoppedWatching = true;
                 messageYoutube("open_strikeout"); // open the strikeout popup
                 strikeOut = true;
                 breakTimer.start();
                 strikeCount = 0; // reset strikeCount
-            } else if (!stoppedWatching) {
-                watchTimer.start();
+
+            } else {
+                messageYoutube("URL_update"); // make sure play/pause listeners are on just in case
+                timerStarted = false; // currently no timers running until video played
+                prevIgnored = true;
             }
             strikeCount++;
             sendResponse("strike changed to " + strikeCount);
+
+        } else {
+            sendResponse("ERROR: unknown request");
         }
     });
 
 
-// detect when the active tab changes
+
+// for url and tab changes ////////////////////////////////////////////////////////////////////////////////////////
+
+// detect when active tab changes
 chrome.tabs.onActivated.addListener(
     function(activeInfo) {
         // check url of active tab
         chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
 
             if (tabs[0].url.match(/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?.*/gm)) {
-
-                stoppedWatching = false; // enable watch timer to start after break is complete
+                messageYoutube("URL_update");
+                sendYoutubeTimestamp();
+                stoppedWatching = false;
+                // let timers run as they were before
+                // need to find a way to deal with continuous play/pause ex. u come back and the video is still playing
+                // since video is STILL playing, there is no new pause/play event heard by listener.
+                // Need to create an isPlaying() method
 
                 if (pauseTimer.isRunning() && (!stoppedWatching)) { // pause timer running
                     //alert("pause timer running");
-                    pauseTimer.stop();
-                    watchTimer.resume();
-                    sendYoutubeTimestamp();
+                    //pauseTimer.stop();
+                    //messageYoutube("URL_update");
+                    //sendYoutubeTimestamp();
                     //sendTimestamp(tabs[0]);
 
                 } else if (!timerStarted) { // pause timer done or break completed
                     //alert("timer restarted");
-                    strikeCount = 1;
-                    watchTimer.start();
+                    if (!prevIgnored) strikeCount = 1;
+                    else prevIgnored = false;
+                    //messageYoutube("URL_update");
                     //sendTimestamp(tabs[0]);
-                    timerStarted = true;
+                    //timerStarted = true;
                 }
                 // if break is incomplete do nothing, use normal procedure
                 // otherwise user is switching between 2 youtube tabs, also do nothing
@@ -301,7 +339,6 @@ chrome.tabs.onActivated.addListener(
                 }
             }
             // send timestamp to ppalli website
-
             if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") {
                 //alert("send on tab switched");
                 sendTimestamp(tabs[0]);
@@ -311,14 +348,53 @@ chrome.tabs.onActivated.addListener(
     }
 )
 
+
 // detect when a tab's url changes, do the same thing as when the active tab switched
 chrome.webNavigation.onCompleted.addListener(function (tabId, changeInfo, tab) {
     // get tab url
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        if (tabs[0].url === "https://tpi-ppalli.github.io/web-app/") {
-            //alert("send on updated");
-            sendTimestamp(tabs[0]);
-        }
+        onUrlChange(tabs[0]);
     });
 });
 
+
+// for url changes due to clicking back button, note this may be called several times per change
+chrome.webNavigation.onHistoryStateUpdated.addListener(function(tabId, changeInfo, tab) {
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        onUrlChange(tabs[0]);
+    });
+});
+
+
+function onUrlChange(tab) {
+    if (tab.url === "https://tpi-ppalli.github.io/web-app/") {
+        //alert("send on updated");
+        sendTimestamp(tab);
+
+    } else if (tab.url.match(/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?.*/gm)) {
+        if (tab.url === "https://www.youtube.com/") {
+            // treat home page like a paused video
+            //alert("home page");
+            if (watchTimer.isRunning()) {
+                watchTimer.pause();
+                pauseTimer.start();
+            }
+        }
+        if (breakTimer.isRunning()) { // make sure popup is open
+            if (strikeOut) {
+                messageYoutube("open_strikeout");
+            } else {
+                messageYoutube("open_popup" + strikeCount);
+            }
+            stoppedWatching = true;
+        }
+        sendYoutubeTimestamp();
+        messageYoutube("URL_update");
+
+    } else {
+        if (watchTimer.isRunning()) {
+            watchTimer.pause();
+            pauseTimer.start();
+        }
+    }
+}
