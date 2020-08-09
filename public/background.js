@@ -8,7 +8,7 @@ let strikeOut = false;
 
 // in milliseconds
 let breakInterval = 30000; // 30min is 1800000
-let watchInterval = 10000;
+let watchInterval = 30000;
 let pauseInterval = breakInterval;
 
 let stoppedWatching = false;
@@ -180,11 +180,76 @@ function sendTimestamp(tab) {
 
 
 // listen for messages from content.js ////////////////////////////////////////////////////////////////////////////
+// listen for messages from content.js and frontend
 chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
+    function (request, sender, sendResponse) {
         console.log(sender.tab ?
             "from a content script:" + sender.tab.url :
             "from the extension");
+
+        if (typeof request !== 'object') {
+            if (request == "vid_stopped" || request == "no_vid") {
+                stoppedWatching = true;
+                if (!timerStarted) {
+                    // if no timer started and there's no vid playing then nothing happens
+                    sendResponse("No timer started");
+
+                } else if (watchTimer.isRunning()) {
+                    // pause the watch timer, and start pause timer when video stops
+                    watchTimer.pause();
+                    pauseTimer.start();
+                    sendResponse("watchTimer stopped");
+
+                } else if (breakTimer.isRunning()) {
+                    stoppedWatching = true;
+                    // if video is stopped by the popup, we keep the breakTimer running even if the vid is stopped
+                    sendResponse("breakTimer resumed");
+
+                } else {
+                    sendResponse("ERROR: request: " + request + " is not dealt with");
+                }
+
+            } else if (request === "vid_played") { // called when a video is played
+                stoppedWatching = false;
+
+                if (watchTimer.isRunning()) {
+                    // do nothing
+                    sendResponse("watchTimer still running");
+
+                } else if (!timerStarted) { // pause timer done | break done | youtube opened first time | strike ignored
+                    //alert("timer restarted");
+                    if (!prevIgnored) strikeCount = 1; // reset strike count if no recent popup ignored
+                    else prevIgnored = false; // for future
+                    watchTimer.start();
+                    timerStarted = true;
+                    sendResponse("timer started in background.js");
+
+                } else if (breakTimer.isRunning()) {
+                    // make sure popup is showing
+                    // popup is up so watch timer does not start
+                    stoppedWatching = true;
+                    if (strikeOut) {
+                        messageYoutube("open_strikeout");
+                    } else {
+                        messageYoutube("open_popup" + strikeCount);
+                    }
+                    sendResponse("video played, break time not complete");
+
+                } else if (pauseTimer.isRunning()){
+                    pauseTimer.stop();
+                    watchTimer.resume();
+                    //sendYoutubeTimestamp();
+                    sendResponse("watchTimer resumed");
+
+                } else {
+                    // listeners must send responses to make sure port is not closed before response received
+                    sendResponse("ERROR: vid play should not reach here");
+                }
+
+            } else if (request === "strike_accepted") {
+                redirect();
+                sendResponse("redirected to: " + strikeURL);
+            }
 
         if  (request == "vid_stopped" || request == "no_vid"){
             stoppedWatching = true;
@@ -274,7 +339,29 @@ chrome.runtime.onMessage.addListener(
         } else {
             sendResponse("ERROR: unknown request");
         }
-    });
+
+    } else if (typeof request === 'object' && request !== null) {
+        if (request.message === "break") {
+            breakTimer.stop();
+            watchTimer.stop();
+            strikeOut = false;
+            strikeCount = 0;
+            breakInterval = request.time * 60000;
+            stoppedWatching = true;
+            breakTimer.start();
+            sendResponse("break interval: " + breakInterval + " request.time: " + request.time);
+        } else if (request.message === "watch") {
+            breakTimer.stop();
+            watchTimer.stop();
+            strikeOut = false;
+            strikeCount = 0;
+            watchInterval = request.time * 60000;
+            stoppedWatching = false;
+            watchTimer.start();
+            sendResponse("watch interval: " + watchInterval + " request.time " + request.time);
+        }
+    }
+});
 
 
 

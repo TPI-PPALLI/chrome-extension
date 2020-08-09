@@ -112,8 +112,8 @@ document.body.append(timerDialog);
 // add strike 1 popup to dom
 var popup1 = document.createElement("div");
 popup1.id = "strike1_popup_ID";
-let image1 = chrome.extension.getURL("src/ppalli_exercise.png");
-popup1.innerHTML = '<h1>First strike!</h1> <img style="width:70px;height:auto;" id="someImage" />';
+let image1 = chrome.extension.getURL("src/strikes/strike 1 meditation.png");
+popup1.innerHTML = '<img id="someImage" class="popup-img"/>';
 document.body.append(popup1);
 document.getElementById('someImage').src = image1;
 
@@ -121,8 +121,8 @@ document.getElementById('someImage').src = image1;
 // add strike 2 popup to dom
 var popup2 = document.createElement("div");
 popup2.id = "strike2_popup_ID";
-let image2 = chrome.extension.getURL("src/ppalli_meditation.png");
-popup2.innerHTML = '<h1>Second strike!</h1> <img style="width:70px;height:auto;" id="someImage2" />';
+let image2 = chrome.extension.getURL("src/strikes/strike 2 meditation.png");
+popup2.innerHTML = '<img id="someImage2" class="popup-img"/>';
 document.body.append(popup2);
 document.getElementById('someImage2').src = image2;
 
@@ -130,8 +130,8 @@ document.getElementById('someImage2').src = image2;
 // add strike 3 popup to dom
 var popup3 = document.createElement("div");
 popup3.id = "strike3_popup_ID";
-let image3 = chrome.extension.getURL("src/ppalli_2_strike.png");
-popup3.innerHTML = '<h1>Third strike!</h1> <img style="width:70px;height:auto;" id="someImage3" />';
+let image3 = chrome.extension.getURL("src/strikes/strike 3 meditation.png");
+popup3.innerHTML = '<img id="someImage3" class="popup-img"/>';
 document.body.append(popup3);
 document.getElementById('someImage3').src = image3;
 
@@ -139,7 +139,10 @@ document.getElementById('someImage3').src = image3;
 // add strike 3 popup to dom
 var strike3popup = document.createElement("div");
 strike3popup.id = "strike_3_ID";
+let image4 = chrome.extension.getURL("src/strikes/strike out meditation.png");
+strike3popup.innerHTML = '<img id="someImage4" class="popup-img"/>';
 document.body.append(strike3popup);
+document.getElementById('someImage4').src = image4;
 
 
 // Countdown functionality
@@ -161,12 +164,11 @@ $(function() {
 // add functionality to popup (jquery dialog)
 $(function() {
     $( "#strike1_popup_ID" ).dialog({
-        dialogClass: "no-close", // no-close to remove x button
-        title: "STRIKE ",
+        dialogClass: "no-close popup", // no-close to remove x button
         resizable: false,
         draggable: false,
-        height: 300,
-        width: 450,
+        height: 370,
+        width: 550,
         autoOpen: false, // opens dialog when youtube is reloaded, set this to false later for timer
         modal: true, // disables other functions on the page
         buttons: {
@@ -188,12 +190,11 @@ $(function() {
 
 $(function() {
     $( "#strike2_popup_ID" ).dialog({
-        dialogClass: "no-close", // no-close to remove x button
-        title: "STRIKE ",
+        dialogClass: "no-close popup", // no-close to remove x button
         resizable: false,
         draggable: false,
-        height: 300,
-        width: 450,
+        height: 370,
+        width: 550,
         autoOpen: false, // opens dialog when youtube is reloaded, set this to false later for timer
         modal: true, // disables other functions on the page
         buttons: {
@@ -215,12 +216,11 @@ $(function() {
 
 $(function() {
     $( "#strike3_popup_ID" ).dialog({
-        dialogClass: "no-close", // no-close to remove x button
-        title: "STRIKE ",
+        dialogClass: "no-close popup", // no-close to remove x button
         resizable: false,
         draggable: false,
-        height: 300,
-        width: 450,
+        height: 370,
+        width: 550,
         autoOpen: false, // opens dialog when youtube is reloaded, set this to false later for timer
         modal: true, // disables other functions on the page
         buttons: {
@@ -246,9 +246,9 @@ $(function() {
         dialogClass: "no-close",
         title: "STRIKE OUT!",
         resizable: false,
-        height: 300,
+        height: 370,
+        width: 550,
         draggable: false,
-        width: 450,
         autoOpen: false,
         modal: true,
         buttons: {

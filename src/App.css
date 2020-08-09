@@ -3,45 +3,53 @@
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 35vmin;
   pointer-events: none;
+  padding: 5px;
+  
+}
+#logo1 {
+  height: 10vmin;;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+  
 }
 
 .App-header {
-  border-radius: 25px;
   background-color: #3246db;
-  min-width: 300px;
-  min-height: 400px; /* your desired width */
+  min-width: 200px;
+  min-height: 300px; /* your desired width */
   max-width: 100%;
   max-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(20px + 2vmin);
+  font-size: calc(20px);
   color: white;
+  padding: 10px;
 }
 
 .App-link {
   color: #61dafb;
 }
 
+#main-body{
+  font-size: calc(12px);
+  padding: 0px 15px;
+}
+
 .button {
   border-radius: 5px;
-  background-color: #ff7171;
+  background-color: #f86379;
   border: none;
   color: white;
-  padding: 10px 14px;
+  padding: 7px 10px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 20px;
+  font-size: 15px;
   margin: 5px 3px;
   cursor: pointer;
 }
@@ -53,4 +61,31 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+#notification-period {
+  border-radius: 3px;
+  background-color: #f86379;
+  color: white;
+  padding: 5px 7px;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.selectholder {
+  position: relative;
+  display: inline-block;
+}
+
+hr.solid {
+  border-top: 1px solid white;
+  margin-bottom: 10%;
+  width: 175px;
+}
+
+.subtitle{
+  font-size: 15px;
+  padding: 5px;
 }
