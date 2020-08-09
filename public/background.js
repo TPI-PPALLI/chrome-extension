@@ -128,6 +128,19 @@ function redirect() {
     chrome.tabs.create({url: strikeURL});
 }
 
+function isPlaying() {
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {message: "get_isPlaying"}, function (response) {
+            if (response) {
+                watchTimer.start();
+            } else {
+                pauseTimer.start();
+            }
+            timerStarted = true;
+        });
+    });
+}
+
 
 // helper to message content.js
 function messageYoutube(toMessage) {
@@ -216,10 +229,10 @@ chrome.runtime.onMessage.addListener(
                     // do nothing
                     sendResponse("watchTimer still running");
 
-                } else if (!timerStarted) { // pause timer done | break done | youtube opened first time | strike ignored
+                } else if (!timerStarted) { // pause timer done | break done | youtube opened first time
                     //alert("timer restarted");
-                    if (!prevIgnored) strikeCount = 1; // reset strike count if no recent popup ignored
-                    else prevIgnored = false; // for future
+                    strikeCount = 1; // reset strike count if no recent popup ignored
+                    //else prevIgnored = false; // for future
                     watchTimer.start();
                     timerStarted = true;
                     sendResponse("timer started in background.js");
@@ -235,7 +248,7 @@ chrome.runtime.onMessage.addListener(
                     }
                     sendResponse("video played, break time not complete");
 
-                } else if (pauseTimer.isRunning()){
+                } else if (pauseTimer.isRunning()) {
                     pauseTimer.stop();
                     watchTimer.resume();
                     //sendYoutubeTimestamp();
@@ -249,119 +262,56 @@ chrome.runtime.onMessage.addListener(
             } else if (request === "strike_accepted") {
                 redirect();
                 sendResponse("redirected to: " + strikeURL);
-            }
 
-        if  (request === "vid_stopped" || request === "no_vid"){
-            stoppedWatching = true;
-            if (!timerStarted) {
-                // if no timer started and there's no vid playing then nothing happens
-                sendResponse("No timer started");
+            } else if (request === "strike_ignored") {
+                // dialog closed by content.js
+                // close dialogs on all youtube tabs
+                messageYoutube("close_popup" + strikeCount);
+                breakTimer.stop(); // stop break timer
+                watchTimer.stop(); // just in case
+                sendYoutubeTimestamp();
 
-            } else if (watchTimer.isRunning()) {
-                // pause the watch timer, and start pause timer when video stops
-                watchTimer.pause();
-                pauseTimer.start();
-                sendResponse("watchTimer stopped");
+                if (strikeCount === 3) {
+                    stoppedWatching = true;
+                    messageYoutube("open_strikeout"); // open the strikeout popup
+                    strikeOut = true;
+                    breakTimer.start();
+                    strikeCount = 0; // reset strikeCount
 
-            } else if (breakTimer.isRunning()){
-                stoppedWatching = true;
-                // if video is stopped by the popup, we keep the breakTimer running even if the vid is stopped
-                sendResponse("breakTimer resumed");
-
-            } else {
-                sendResponse("ERROR: request: " + request + " is not dealt with");
-            }
-
-        } else if (request === "vid_played") { // called when a video is played
-            stoppedWatching = false;
-
-            if (watchTimer.isRunning()) {
-                // do nothing
-                sendResponse("watchTimer still running");
-
-            } else if (!timerStarted) { // pause timer done | break done | youtube opened first time | strike ignored
-                //alert("timer restarted");
-                if (!prevIgnored) strikeCount = 1; // reset strike count if no recent popup ignored
-                else prevIgnored = false; // for future
-                watchTimer.start();
-                timerStarted = true;
-                sendResponse("timer started in background.js");
-
-            } else if (breakTimer.isRunning()) {
-                // make sure popup is showing
-                // popup is up so watch timer does not start
-                stoppedWatching = true;
-                if (strikeOut) {
-                    messageYoutube("open_strikeout");
                 } else {
-                    messageYoutube("open_popup" + strikeCount);
+                    messageYoutube("URL_update"); // make sure play/pause listeners are on just in case
+                    // start pauseTimer if paused, watchTimer if playing
+                    isPlaying();
                 }
-                sendResponse("video played, break time not complete");
-
-            } else if (pauseTimer.isRunning()){
-                pauseTimer.stop();
-                watchTimer.resume();
-                //sendYoutubeTimestamp();
-                sendResponse("watchTimer resumed");
+                strikeCount++;
+                sendResponse("strike changed to " + strikeCount);
 
             } else {
-                // listeners must send responses to make sure port is not closed before response received
-                sendResponse("ERROR: vid play should not reach here");
+                sendResponse("ERROR: unknown request");
             }
 
-        } else if (request === "strike_accepted") {
-            redirect();
-            sendResponse("redirected to: " + strikeURL);
-
-        } else if (request === "strike_ignored") {
-            // dialog closed by content.js
-            // close dialogs on all youtube tabs
-            messageYoutube("close_popup" + strikeCount);
-            breakTimer.stop(); // stop break timer
-            watchTimer.stop(); // just in case
-            sendYoutubeTimestamp();
-
-            if (strikeCount === 3) {
+        } else if (typeof request === 'object' && request !== null) {
+            if (request.message === "break") {
+                breakTimer.stop();
+                watchTimer.stop();
+                strikeOut = false;
+                strikeCount = 0;
+                breakInterval = request.time * 60000;
                 stoppedWatching = true;
-                messageYoutube("open_strikeout"); // open the strikeout popup
-                strikeOut = true;
                 breakTimer.start();
-                strikeCount = 0; // reset strikeCount
-
-            } else {
-                messageYoutube("URL_update"); // make sure play/pause listeners are on just in case
-                timerStarted = false; // currently no timers running until video played
-                prevIgnored = true;
+                sendResponse("break interval: " + breakInterval + " request.time: " + request.time);
+            } else if (request.message === "watch") {
+                breakTimer.stop();
+                watchTimer.stop();
+                strikeOut = false;
+                strikeCount = 0;
+                watchInterval = request.time * 60000;
+                stoppedWatching = false;
+                watchTimer.start();
+                sendResponse("watch interval: " + watchInterval + " request.time " + request.time);
             }
-            strikeCount++;
-            sendResponse("strike changed to " + strikeCount);
-
-        } else {
-            sendResponse("ERROR: unknown request");
         }
-
-    } else if (typeof request === 'object' && request !== null) {
-        if (request.message === "break") {
-            breakTimer.stop();
-            watchTimer.stop();
-            strikeOut = false;
-            strikeCount = 0;
-            breakInterval = request.time * 60000;
-            stoppedWatching = true;
-            breakTimer.start();
-            sendResponse("break interval: " + breakInterval + " request.time: " + request.time);
-        } else if (request.message === "watch") {
-            breakTimer.stop();
-            watchTimer.stop();
-            strikeOut = false;
-            strikeCount = 0;
-            watchInterval = request.time * 60000;
-            stoppedWatching = false;
-            watchTimer.start();
-            sendResponse("watch interval: " + watchInterval + " request.time " + request.time);
-        }
-    }
-});
+    });
 
 
 

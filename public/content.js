@@ -60,6 +60,7 @@ function startCountdown() {
 
 
 // pause and play listeners ////////////////////////////////////////////////////////////////
+let isPlaying = false;
 var v;
 var oldURL = "";
 var currentURL = window.location.href;
@@ -69,12 +70,14 @@ function checkURLchange(currentURL){
         if (v != null) {
             console.log("video exists");
             v.addEventListener("play", function () {
+                isPlaying = true;
                 console.log('video playing...');
                 chrome.runtime.sendMessage("vid_played", function (response) {
                     console.log(response);
                 });
             }, true);
             v.addEventListener("pause", function () {
+                isPlaying = false;
                 console.log('video stopped...');
                 chrome.runtime.sendMessage("vid_stopped", function (response) {
                     console.log(response);
@@ -331,6 +334,8 @@ chrome.runtime.onMessage.addListener(
             checkURLchange(window.location.href);
             sendResponse("check url change called");
 
+        } else if (request.message === "get_isPlaying") {
+            sendResponse(isPlaying);
         } else {
             sendResponse("content.js received unknown request");
         }
