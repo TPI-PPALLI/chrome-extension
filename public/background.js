@@ -7,8 +7,8 @@ let strikeCount = 1;
 let strikeOut = false;
 
 // in milliseconds
-let breakInterval = 10000; // 30min is 1800000
-let watchInterval = 10000;
+let breakInterval = 600000; // 30min is 1800000
+let watchInterval = 600000;
 let pauseInterval = breakInterval;
 
 let stoppedWatching = false;
@@ -72,6 +72,9 @@ let Timer = function(callback, time, enablecountdown) {
         return date;
         //return remaining;
     }
+    this.updateTimeInterval = function (newTime) {
+        time = newTime;
+    }
 }
 
 let runTimer = false;
@@ -86,12 +89,13 @@ function closeAllPopups() {
 
 
 // set timers to call each other recursively
+
 let watchTimer = new Timer(function () {
     closeAllPopups();
     watchTimer.setRunning(false);
     messageYoutube("open_popup" + strikeCount); // send message to content.js to open popup
     breakTimer.start();
-}, watchInterval, true);
+    }, watchInterval, true);
 
 
 let breakTimer = new Timer(function () {
@@ -107,7 +111,7 @@ let breakTimer = new Timer(function () {
 }, breakInterval, true);
 
 
-// if watch timer is running but you switch tabs out of youtube, reset timers after pauseInterval
+// if watch timer is running but you pause the video or go to a new page that is not youtube
 let pauseTimer = new Timer(function () {
     // close all popups just in case
     closeAllPopups();
@@ -117,7 +121,8 @@ let pauseTimer = new Timer(function () {
     timerStarted = false;
     stoppedWatching = true;
     strikeCount = 1;
-}, pauseInterval, true)
+}, pauseInterval, true);
+
 
 
 // END OF GLOBAL VARIABLES //////////////////////////////////////////////////////////////////////////////////////////
@@ -291,28 +296,50 @@ chrome.runtime.onMessage.addListener(
             }
 
         } else if (typeof request === 'object' && request !== null) {
+            var currentTimer = getRunning();
             if (request.message === "break") {
+                //alert("break changed");
                 breakTimer.stop();
                 watchTimer.stop();
+                pauseTimer.stop();
                 strikeOut = false;
                 strikeCount = 0;
                 breakInterval = request.time * 60000;
+                pauseInterval = breakInterval;
+                breakTimer.updateTimeInterval(breakInterval); // recreate timer with new interval
+                pauseTimer.updateTimeInterval(pauseInterval);
                 stoppedWatching = true;
-                breakTimer.start();
+                if (currentTimer != "none") currentTimer.start();
                 sendResponse("break interval: " + breakInterval + " request.time: " + request.time);
             } else if (request.message === "watch") {
+                //alert("watch changed");
                 breakTimer.stop();
                 watchTimer.stop();
+                pauseTimer.stop();
                 strikeOut = false;
                 strikeCount = 0;
                 watchInterval = request.time * 60000;
+                watchTimer.updateTimeInterval(watchInterval); // recreate timer with new interval
                 stoppedWatching = false;
-                watchTimer.start();
+                if (currentTimer != "none") currentTimer.start();
                 sendResponse("watch interval: " + watchInterval + " request.time " + request.time);
             }
         }
     });
 
+
+// return the currently running timer
+function getRunning() {
+    if (breakTimer.isRunning()) {
+        return breakTimer;
+    } else if (watchTimer.isRunning()) {
+        return watchTimer;
+    } else if (pauseTimer.isRunning()) {
+        return pauseTimer;
+    } else {
+        return "none";
+    }
+}
 
 
 // for url and tab changes ////////////////////////////////////////////////////////////////////////////////////////
