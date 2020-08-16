@@ -8,8 +8,8 @@ import { activityOptions } from "./constants/activityOptions";
 
 function App() {
   const extensionId = chrome.runtime.id;
-  const [breakTimer, setBreakTimer] = useState(timeOptions[0].value);
-  const [watchTimer, setWatchTimer] = useState(timeOptions[0].value);
+  const [breakTimer, setBreakTimer] = useState(timeOptions[1].value);
+  const [watchTimer, setWatchTimer] = useState(timeOptions[1].value);
   const [activity, setActivity] = useState(activityOptions[0].value);
   const setWatchOnChange = (e) => {
     setWatchTimer(e.target.value);
